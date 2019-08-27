@@ -113,7 +113,7 @@ public class JfAnalizador extends javax.swing.JFrame {
     String nombreArchivo;
     private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
         // TODO add your handling code here:
-        if(JF){
+        //if(JF){
             JFileChooser dialogo = new JFileChooser();
         FileNameExtensionFilter filtro = new FileNameExtensionFilter(".txt", "txt");
         File fichero = null;
@@ -189,10 +189,10 @@ public class JfAnalizador extends javax.swing.JFrame {
                 Logger.getLogger(JfAnalizador.class.getName()).log(Level.SEVERE, null, ex);
             }
         }           
-        }  
-        else{
-            JOptionPane.showMessageDialog(null,"Primero debe general el analizador léxico");
-        }
+        //}  
+        //else{
+            //JOptionPane.showMessageDialog(null,"Primero debe general el analizador léxico");
+        //}
     }//GEN-LAST:event_btnCargarArchivoActionPerformed
 
     String nombreArchivoFlex;
