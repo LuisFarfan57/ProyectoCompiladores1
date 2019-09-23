@@ -15,7 +15,7 @@ char = [.\r\n]
 caracterSinFinComentario = [^\r\n~"*/"]
 caracterSinFinLineaApostrofe = [^~'~\r\n]
 
-comentarioMulti = ("/*" [^*] ~"*/") | ("/*" "*"+ "/")
+comentarioMulti = ("/*""*"* {caracterSinFinComentario} "*"*"*/") | ("/*" "*"+ "/")
 comentarioAnidado = "/*" {char}* {comentarioMulti}+ {char}* "*/"
 
 
