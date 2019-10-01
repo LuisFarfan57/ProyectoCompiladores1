@@ -11,6 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -110,12 +113,12 @@ public class JfAnalizador extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    String nombreArchivo;
+    String nombreArchivo;    
     private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
         // TODO add your handling code here:
         //if(JF){
             JFileChooser dialogo = new JFileChooser();
-        FileNameExtensionFilter filtro = new FileNameExtensionFilter(".txt", "txt");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(".sql", "sql");
         File fichero = null;
         String rutaArchivo = "";
         dialogo.setFileFilter(filtro);
@@ -131,15 +134,23 @@ public class JfAnalizador extends javax.swing.JFrame {
             try {
                 Reader lector = new BufferedReader(new FileReader(rutaArchivo));
                 Lexer lexer = new Lexer(lector);
-                String resultado = "RESULTADOS:\n\nTOKEN: Descripción (linea, columna inicial, columna final)\n\n";
+                ArrayList<Tokens> listaTokens = new ArrayList<Tokens>();
+                ArrayList<String> lineas = new ArrayList<String>();
+                
+                String resultado = "";
                 while (true) {
                     Tokens tokens = lexer.yylex(); 
                 
                     if (tokens == null) {                                            
-                        escribirArchivo(resultado);
+                        //escribirArchivo(resultado);
                         txtResultado.setText(resultado);
+                        AnalizadorSintactico a = new AnalizadorSintactico(listaTokens, lineas);
+                        txtResultado.setText(a.analizar());
                         return;
-                    }                               
+                    }                              
+                    
+                    listaTokens.add(tokens);
+                    lineas.add("(" + lexer.linea + ", " + lexer.columna + ", " + lexer.columnaInicial + ")");
                 
                     switch (tokens) {
                         case ERROR:
@@ -168,31 +179,19 @@ public class JfAnalizador extends javax.swing.JFrame {
                             break;
                         case ErrorFloatMas:
                             resultado += lexer.lexeme + ": Error, un float exponencial debe llevar un signo \"+\" (" + lexer.linea + ", " + lexer.columna + ", " + lexer.columnaInicial + ")\n";
-                            break;
-                        case Identificador: case Numero: case Float: case Bit:
-                            resultado += lexer.lexeme + ": Es un " + tokens + " (" + lexer.linea + ", " + lexer.columna + ", " + lexer.columnaInicial + ")\n";
-                        break;
-                        case Reservadas:
-                            resultado += lexer.lexeme + ": Es una palabra reservada (" + lexer.linea + ", " + lexer.columna + ", " + lexer.columnaInicial + ")\n";
-                        break;
-                        case Cadena:
-                            resultado += lexer.lexeme + ": Es una cadena (" + lexer.linea + ", " + lexer.columna + ", " + lexer.columnaInicial + ")\n";
-                        break;
-                        default:
-                            resultado += lexer.lexeme + ": " + tokens  + " (" + lexer.linea + ", " + lexer.columna + ", " + lexer.columnaInicial + ")\n";
-                        break;
-                    }
-                }
+                            break;                        
+                    }                                       
+                }                    
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(JfAnalizador.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(JfAnalizador.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }                        
         }           
         //}  
         //else{
             //JOptionPane.showMessageDialog(null,"Primero debe general el analizador léxico");
-        //}
+        //}        
     }//GEN-LAST:event_btnCargarArchivoActionPerformed
 
     String nombreArchivoFlex;
@@ -268,9 +267,13 @@ public class JfAnalizador extends javax.swing.JFrame {
             if(Escritor.Escribir(fichero.getAbsolutePath() + "\\" + nombreArchivo + ".out", contenido)){
                 JOptionPane.showMessageDialog(null,"Archivo generado correctamente en " + fichero.getAbsolutePath() + "\\" + nombreArchivo + ".out");
             }            
-        }
+        }                
+    }
+    
+    boolean analizarSintacticamente(){
+        boolean resultado = false;
         
-        
+        return resultado;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

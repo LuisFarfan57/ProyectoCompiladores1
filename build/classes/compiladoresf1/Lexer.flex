@@ -8,21 +8,19 @@ import static compiladoresf1.Tokens.*;
 LM=[A-Z_]+
 Lm=[a-z]+
 D=[0-9]+
-espacio=[ ,\t,\r,\n]+
+coma = ","
+espacio=[ \t\r\n]+
 FinLinea = \r|\n|\r\n
 caracter = [^\r\n]
+caracterString = [^~"'"~\r~\n]
 char = [.\r\n]
 caracterSinFinComentario = [^\r\n~"*/"]
 caracterSinFinLineaApostrofe = [^~'~\r\n]
 
-comentarioMulti = ("/*""*"* {caracterSinFinComentario} "*"*"*/") | ("/*" "*"+ "/")
-comentarioAnidado = "/*" {char}* {comentarioMulti}+ {char}* "*/"
+comentarioMulti = ("/"("")* [^] ("")* ~"/") | ("/" ("")+ "/")
 
 
-cadena = "'"{caracterSinFinLineaApostrofe}*"'"|"'""'"
-cadenaEnter = "'"{caracterSinFinLineaApostrofe}*{FinLinea}{caracterSinFinLineaApostrofe}*"'"
-cadenaApostrofe = "'"{caracterSinFinLineaApostrofe}*"'"{caracterSinFinLineaApostrofe}*"'"
-cadenaIncompleta = "'"{caracterSinFinLineaApostrofe}*
+cadena = "'"{caracterString}*"'"
 
 comentario = "--" {caracter}* {FinLinea}?
 %{
@@ -32,33 +30,430 @@ comentario = "--" {caracter}* {FinLinea}?
     public int columnaInicial;    
 %}
 %%
+{coma} {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Coma;}
 {espacio} {/*Ignore*/}
 {comentarioMulti}  | {comentario} {/*Ignore*/}
 
-{comentarioAnidado} {linea = yyline + 1; columna = yycolumn + 1;lexeme=yytext(); columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorComentarioAnidado;}
-"/*"{caracterSinFinComentario}* {linea = yyline + 1; columna = yycolumn + 1;lexeme=yytext(); columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorComentarioMulti;}
 
-
-ADD |EXTERNAL |PROCEDURE |ALL |FETCH |PUBLIC |ALTER |FILE |RAISERROR |AND |FILLFACTOR |READ |ANY |FOR |READTEXT |AS |FOREIGN |RECONFIGURE |ASC |FREETEXT |REFERENCES |AUTHORIZATION |FREETEXTTABLE |REPLICATION |BACKUP |FROM |RESTORE |BEGIN |FULL |RESTRICT |BETWEEN |FUNCTION |RETURN |BREAK |
-GOTO |REVERT |BROWSE |GRANT |REVOKE |BULK |GROUP |RIGHT |BY |HAVING |ROLLBACK |CASCADE |HOLDLOCK |ROWCOUNT |CASE |IDENTITY |ROWGUIDCOL |CHECK |IDENTITY_INSERT |RULE |CHECKPOINT |IDENTITYCOL |SAVE |CLOSE |IF |SCHEMA |CLUSTERED |IN |SECURITYAUDIT |COALESCE |INDEX |SELECT |COLLATE |INNER |SEMANTICKEYPHRASETABLE |
-COLUMN |INSERT |SEMANTICSIMILARITYDETAILSTABLE |COMMIT |INTERSECT |SEMANTICSIMILARITYTABLE |COMPUTE |INTO |SESSION_USER |CONSTRAINT |IS |SET |CONTAINS |JOIN |SETUSER |CONTAINSTABLE |KEY |SHUTDOWN |CONTINUE |KILL |SOME |CONVERT |LEFT |STATISTICS |CREATE |LIKE |SYSTEM_USER |CROSS |LINENO |TABLE |CURRENT |
-LOAD |TABLESAMPLE |CURRENT_DATE |MERGE |TEXTSIZE |CURRENT_TIME |NATIONAL |THEN |CURRENT_TIMESTAMP |NOCHECK |TO |CURRENT_USER |NONCLUSTERED |TOP |CURSOR |NOT |TRAN |DATABASE |NULL |TRANSACTION |DBCC |NULLIF |TRIGGER |DEALLOCATE |OF |TRUNCATE |DECLARE |OFF |TRY_CONVERT |DEFAULT |OFFSETS |TSEQUAL |DELETE |ON |UNION |
-DENY |OPEN |UNIQUE |DESC |OPENDATASOURCE |UNPIVOT |DISK |OPENQUERY |UPDATE |DISTINCT |OPENROWSET |UPDATETEXT |DISTRIBUTED |OPENXML |USE |DOUBLE |OPTION |USER |DROP |OR |VALUES |DUMP |ORDER |VARYING |ELSE |OUTER |VIEW |END |OVER |WAITFOR |ERRLVL |PERCENT |WHEN |ESCAPE |PIVOT |WHERE |EXCEPT |PLAN |WHILE |EXEC |PRECISION |WITH |
-EXECUTE |PRIMARY |WITHIN GROUP |EXISTS |PRINT |WRITETEXT |EXIT |PROC |ABSOLUTE |EXEC |OVERLAPS |ACTION |EXECUTE |PAD |ADA |EXISTS |PARTIAL |ADD |EXTERNAL |PASCAL |ALL |EXTRACT |POSITION |ALLOCATE |FALSE |PRECISION |ALTER |FETCH |PREPARE |AND |FIRST |PRESERVE |ANY |FLOAT |PRIMARY |ARE |FOR |PRIOR |AS |FOREIGN |PRIVILEGES |ASC |
-FORTRAN |PROCEDURE |ASSERTION |FOUND |PUBLIC |AT |FROM |READ |AUTHORIZATION |FULL |REAL |AVG |GET |REFERENCES |BEGIN |GLOBAL |RELATIVE |BETWEEN |GO |RESTRICT |BIT |GOTO | REVOKE |BIT_LENGTH |GRANT |RIGHT |BOTH |GROUP |ROLLBACK |BY |HAVING |ROWS |CASCADE |HOUR |SCHEMA |CASCADED |IDENTITY |SCROLL |CASE |IMMEDIATE |SECOND |
-CAST |IN |SECTION |CATALOG |INCLUDE |SELECT |CHAR |INDEX |SESSION |CHAR_LENGTH |INDICATOR |SESSION_USER |CHARACTER |INITIALLY |SET |CHARACTER_LENGTH |INNER |SIZE |CHECK |INPUT |SMALLINT |CLOSE |INSENSITIVE |SOME |COALESCE |INSERT |SPACE |COLLATE |INT |SQL |COLLATION |INTEGER |SQLCA |COLUMN |INTERSECT |SQLCODE |COMMIT |INTERVAL |
-SQLERROR |CONNECT |INTO |SQLSTATE |CONNECTION |IS |SQLWARNING |CONSTRAINT |ISOLATION |SUBSTRING |CONSTRAINTS |JOIN |SUM |CONTINUE |KEY |SYSTEM_USER |CONVERT |LANGUAGE |TABLE |CORRESPONDING |LAST |TEMPORARY |COUNT |LEADING |THEN |CREATE |LEFT |TIME |CROSS |LEVEL |TIMESTAMP |CURRENT |LIKE |TIMEZONE_HOUR |CURRENT_DATE |LOCAL |TIMEZONE_MINUTE |
-CURRENT_TIME |LOWER |TO |CURRENT_TIMESTAMP |MATCH |TRAILING |CURRENT_USER |MAX |TRANSACTION |CURSOR |MIN |TRANSLATE |DATE |MINUTE |TRANSLATION |DAY |MODULE |TRIM |DEALLOCATE |MONTH |TRUE |DEC |NAMES |UNION |DECIMAL |NATIONAL |UNIQUE |DECLARE |NATURAL |UNKNOWN |DEFAULT |NCHAR |UPDATE |DEFERRABLE |NEXT |UPPER |DEFERRED |NO |USAGE |
-DELETE |NONE |USER |DESC |NOT |USING |DESCRIBE |NULL |VALUE |DESCRIPTOR |NULLIF |VALUES |DIAGNOSTICS |NUMERIC |VARCHAR |DISCONNECT |OCTET_LENGTH |VARYING |DISTINCT |OF |VIEW |DOMAIN |ON |WHEN |DOUBLE |ONLY |WHENEVER |DROP |OPEN |WHERE |ELSE |OPTION |WITH |END |OR |WORK |END-EXEC |ORDER |WRITE |ESCAPE |OUTER |YEAR |EXCEPT |
-OUTPUT |ZONE |EXCEPTION |ABSOLUTE |HOST |RELATIVE |ACTION |HOUR |RELEASE |ADMIN |IGNORE |RESULT |AFTER |IMMEDIATE |RETURNS |AGGREGATE |INDICATOR |ROLE |ALIAS |INITIALIZE |ROLLUP |ALLOCATE |INITIALLY |ROUTINE |ARE |INOUT |ROW |ARRAY |INPUT |ROWS |ASENSITIVE |INT |SAVEPOINT |ASSERTION |INTEGER |
-SCROLL |ASYMMETRIC |INTERSECTION |SCOPE |AT |INTERVAL |SEARCH |ATOMIC |ISOLATION |SECOND |BEFORE |ITERATE |SECTION |BINARY |LANGUAGE |SENSITIVE |BIT |LARGE |SEQUENCE |BLOB |LAST |SESSION |BOOLEAN |LATERAL |SETS |BOTH |LEADING |SIMILAR |BREADTH |LESS |SIZE |CALL |LEVEL |SMALLINT |CALLED |LIKE_REGEX |SPACE |CARDINALITY |LIMIT |SPECIFIC |
-CASCADED |LN |SPECIFICTYPE |CAST |LOCAL |SQL |CATALOG |LOCALTIME |SQLEXCEPTION |CHAR |LOCALTIMESTAMP |SQLSTATE |CHARACTER |LOCATOR |SQLWARNING |CLASS |MAP |START |CLOB |MATCH |STATE |COLLATION |MEMBER |STATEMENT |COLLECT |METHOD |STATIC |COMPLETION |MINUTE |STDDEV_POP |CONDITION |MOD |STDDEV_SAMP |CONNECT |MODIFIES |STRUCTURE |CONNECTION |
-MODIFY |SUBMULTISET |CONSTRAINTS |MODULE |SUBSTRING_REGEX |CONSTRUCTOR |MONTH |SYMMETRIC |CORR |MULTISET |SYSTEM |CORRESPONDING |NAMES |TEMPORARY |COVAR_POP |NATURAL |TERMINATE |COVAR_SAMP |NCHAR |THAN |CUBE |NCLOB |TIME |CUME_DIST |NEW |TIMESTAMP |CURRENT_CATALOG |NEXT |TIMEZONE_HOUR |CURRENT_DEFAULT_TRANSFORM_GROUP |NO |
-TIMEZONE_MINUTE |CURRENT_PATH |NONE |TRAILING |CURRENT_ROLE |NORMALIZE |TRANSLATE_REGEX |CURRENT_SCHEMA |NUMERIC |TRANSLATION |CURRENT_TRANSFORM_GROUP_FOR_TYPE |OBJECT |TREAT |CYCLE |OCCURRENCES_REGEX |TRUE |DATA |OLD |UESCAPE |DATE |ONLY |UNDER |DAY |OPERATION |UNKNOWN |DEC |ORDINALITY |UNNEST |DECIMAL |OUT |USAGE |DEFERRABLE |
-OVERLAY |USING |DEFERRED |OUTPUT |VALUE |DEPTH |PAD |VAR_POP |DEREF |PARAMETER |VAR_SAMP |DESCRIBE |PARAMETERS |VARCHAR |DESCRIPTOR |PARTIAL |VARIABLE |DESTROY |PARTITION |WHENEVER |DESTRUCTOR |PATH |WIDTH_BUCKET |DETERMINISTIC |POSTFIX |WITHOUT |DICTIONARY |PREFIX |WINDOW |DIAGNOSTICS |PREORDER |WITHIN |DISCONNECT |PREPARE |WORK |
-DOMAIN |PERCENT_RANK |WRITE |DYNAMIC |PERCENTILE_CONT |XMLAGG |EACH |PERCENTILE_DISC |XMLATTRIBUTES |ELEMENT |POSITION_REGEX |XMLBINARY |END-EXEC |PRESERVE |XMLCAST |EQUALS |PRIOR |XMLCOMMENT |EVERY |PRIVILEGES |XMLCONCAT |EXCEPTION |RANGE |XMLDOCUMENT |FALSE |READS |XMLELEMENT |FILTER |REAL |XMLEXISTS |FIRST |RECURSIVE |XMLFOREST |
-FLOAT |REF |XMLITERATE |FOUND |REFERENCING |XMLNAMESPACES |FREE |REGR_AVGX |XMLPARSE |FULLTEXTTABLE |REGR_AVGY |XMLPI |FUSION |REGR_COUNT |XMLQUERY |GENERAL |REGR_INTERCEPT |XMLSERIALIZE |GET |REGR_R2 |XMLTABLE |GLOBAL |REGR_SLOPE |XMLTEXT |GO |REGR_SXX |XMLVALIDATE |GROUPING |REGR_SXY |YEAR |HOLD |REGR_SYY |
-ZONE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Reservadas;}
+ADD {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ADD;}
+EXTERNAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXTERNAL;}
+PROCEDURE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PROCEDURE;}
+ALL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ALL;}
+FETCH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FETCH;}
+PUBLIC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PUBLIC;}
+ALTER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ALTER;}
+FILE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FILE;}
+RAISERROR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RAISERROR;}
+AND {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AND;}
+FILLFACTOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FILLFACTOR;}
+READ {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return READ;}
+ANY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ANY;}
+FOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FOR;}
+READTEXT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return READTEXT;}
+AS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AS;}
+FOREIGN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FOREIGN;}
+RECONFIGURE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RECONFIGURE;}
+ASC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ASC;}
+FREETEXT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FREETEXT;}
+REFERENCES {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REFERENCES;}
+AUTHORIZATION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AUTHORIZATION;}
+FREETEXTTABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FREETEXTTABLE;}
+REPLICATION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REPLICATION;}
+BACKUP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BACKUP;}
+FROM {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FROM;}
+RESTORE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RESTORE;}
+BEGIN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BEGIN;}
+FULL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FULL;}
+RESTRICT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RESTRICT;}
+BETWEEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BETWEEN;}
+FUNCTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FUNCTION;}
+RETURN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RETURN;}
+BREAK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BREAK;}
+GOTO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GOTO;}
+REVERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REVERT;}
+BROWSE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BROWSE;}
+GRANT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GRANT;}
+REVOKE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REVOKE;}
+BULK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BULK;}
+GROUP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GROUP;}
+RIGHT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RIGHT;}
+BY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BY;}
+HAVING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return HAVING;}
+ROLLBACK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ROLLBACK;}
+CASCADE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CASCADE;}
+HOLDLOCK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return HOLDLOCK;}
+ROWCOUNT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ROWCOUNT;}
+CASE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CASE;}
+IDENTITY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IDENTITY;}
+ROWGUIDCOL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ROWGUIDCOL;}
+CHECK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHECK;}
+IDENTITY_INSERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IDENTITY_INSERT;}
+RULE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RULE;}
+CHECKPOINT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHECKPOINT;}
+IDENTITYCOL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IDENTITYCOL;}
+SAVE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SAVE;}
+CLOSE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CLOSE;}
+IF {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IF;}
+SCHEMA {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SCHEMA;}
+CLUSTERED {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CLUSTERED;}
+IN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IN;}
+SECURITYAUDIT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SECURITYAUDIT;}
+COALESCE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COALESCE;}
+INDEX {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INDEX;}
+SELECT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SELECT;}
+COLLATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COLLATE;}
+INNER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INNER;}
+SEMANTICKEYPHRASETABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SEMANTICKEYPHRASETABLE;}
+COLUMN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COLUMN;}
+INSERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INSERT;}
+SEMANTICSIMILARITYDETAILSTABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SEMANTICSIMILARITYDETAILSTABLE;}
+COMMIT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COMMIT;}
+INTERSECT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INTERSECT;}
+SEMANTICSIMILARITYTABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SEMANTICSIMILARITYTABLE;}
+COMPUTE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COMPUTE;}
+INTO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INTO;}
+SESSION_USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SESSION_USER;}
+CONSTRAINT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONSTRAINT;}
+IS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IS;}
+SET {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SET;}
+CONTAINS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONTAINS;}
+JOIN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return JOIN;}
+SETUSER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SETUSER;}
+CONTAINSTABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONTAINSTABLE;}
+KEY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return KEY;}
+SHUTDOWN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SHUTDOWN;}
+CONTINUE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONTINUE;}
+KILL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return KILL;}
+SOME {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SOME;}
+CONVERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONVERT;}
+LEFT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LEFT;}
+STATISTICS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return STATISTICS;}
+CREATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CREATE;}
+LIKE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LIKE;}
+SYSTEM_USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SYSTEM_USER;}
+CROSS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CROSS;}
+LINENO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LINENO;}
+TABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TABLE;}
+CURRENT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT;}
+LOAD {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LOAD;}
+TABLESAMPLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TABLESAMPLE;}
+CURRENT_DATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_DATE;}
+MERGE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MERGE;}
+TEXTSIZE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TEXTSIZE;}
+CURRENT_TIME {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_TIME;}
+NATIONAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NATIONAL;}
+THEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return THEN;}
+CURRENT_TIMESTAMP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_TIMESTAMP;}
+NOCHECK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NOCHECK;}
+TO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TO;}
+CURRENT_USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_USER;}
+NONCLUSTERED {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NONCLUSTERED;}
+TOP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TOP;}
+CURSOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURSOR;}
+NOT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NOT;}
+TRAN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRAN;}
+DATABASE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DATABASE;}
+NULL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NULL;}
+TRANSACTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRANSACTION;}
+DBCC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DBCC;}
+NULLIF {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NULLIF;}
+TRIGGER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRIGGER;}
+DEALLOCATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEALLOCATE;}
+OF {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OF;}
+TRUNCATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRUNCATE;}
+DECLARE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DECLARE;}
+OFF {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OFF;}
+TRY_CONVERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRY_CONVERT;}
+DEFAULT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEFAULT;}
+OFFSETS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OFFSETS;}
+TSEQUAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TSEQUAL;}
+DELETE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DELETE;}
+ON {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ON;}
+UNION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UNION;}
+DENY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DENY;}
+OPEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPEN;}
+UNIQUE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UNIQUE;}
+DESC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DESC;}
+OPENDATASOURCE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPENDATASOURCE;}
+UNPIVOT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UNPIVOT;}
+DISK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DISK;}
+OPENQUERY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPENQUERY;}
+UPDATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UPDATE;}
+DISTINCT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DISTINCT;}
+OPENROWSET {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPENROWSET;}
+UPDATETEXT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UPDATETEXT;}
+DISTRIBUTED {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DISTRIBUTED;}
+OPENXML {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPENXML;}
+USE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return USE;}
+DOUBLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DOUBLE;}
+OPTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPTION;}
+USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return USER;}
+DROP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DROP;}
+OR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OR;}
+VALUES {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VALUES;}
+DUMP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DUMP;}
+ORDER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ORDER;}
+VARYING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VARYING;}
+ELSE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ELSE;}
+OUTER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OUTER;}
+VIEW {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VIEW;}
+END {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return END;}
+OVER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OVER;}
+WAITFOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WAITFOR;}
+ERRLVL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ERRLVL;}
+PERCENT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PERCENT;}
+WHEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WHEN;}
+ESCAPE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ESCAPE;}
+PIVOT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PIVOT;}
+WHERE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WHERE;}
+EXCEPT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXCEPT;}
+PLAN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PLAN;}
+WHILE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WHILE;}
+EXEC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXEC;}
+PRECISION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRECISION;}
+WITH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WITH;}
+EXECUTE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXECUTE;}
+PRIMARY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRIMARY;}
+WITHINGROUP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WITHINGROUP;}
+EXISTS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXISTS;}
+PRINT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRINT;}
+WRITETEXT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WRITETEXT;}
+EXIT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXIT;}
+PROC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PROC;}
+ABSOLUTE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ABSOLUTE;}
+EXEC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXEC;}
+OVERLAPS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OVERLAPS;}
+ACTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ACTION;}
+EXECUTE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXECUTE;}
+PAD {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PAD;}
+ADA {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ADA;}
+EXISTS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXISTS;}
+PARTIAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PARTIAL;}
+ADD {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ADD;}
+EXTERNAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXTERNAL;}
+PASCAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PASCAL;}
+ALL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ALL;}
+EXTRACT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXTRACT;}
+POSITION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return POSITION;}
+ALLOCATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ALLOCATE;}
+FALSE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FALSE;}
+PRECISION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRECISION;}
+ALTER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ALTER;}
+FETCH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FETCH;}
+PREPARE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PREPARE;}
+AND {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AND;}
+FIRST {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FIRST;}
+PRESERVE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRESERVE;}
+ANY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ANY;}
+FLOAT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FLOAT;}
+PRIMARY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRIMARY;}
+ARE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ARE;}
+FOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FOR;}
+PRIOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRIOR;}
+AS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AS;}
+FOREIGN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FOREIGN;}
+PRIVILEGES {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PRIVILEGES;}
+ASC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ASC;}
+FORTRAN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FORTRAN;}
+PROCEDURE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PROCEDURE;}
+ASSERTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ASSERTION;}
+FOUND {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FOUND;}
+PUBLIC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PUBLIC;}
+AT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AT;}
+FROM {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FROM;}
+READ {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return READ;}
+AUTHORIZATION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AUTHORIZATION;}
+FULL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return FULL;}
+REAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REAL;}
+AVG {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AVG;}
+GET {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GET;}
+REFERENCES {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REFERENCES;}
+BEGIN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BEGIN;}
+GLOBAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GLOBAL;}
+RELATIVE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RELATIVE;}
+BETWEEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BETWEEN;}
+GO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GO;}
+RESTRICT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RESTRICT;}
+BIT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BIT;}
+GOTO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GOTO;}
+REVOKE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return REVOKE;}
+BIT_LENGTH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BIT_LENGTH;}
+GRANT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GRANT;}
+RIGHT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return RIGHT;}
+BOTH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BOTH;}
+GROUP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return GROUP;}
+ROLLBACK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ROLLBACK;}
+BY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return BY;}
+HAVING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return HAVING;}
+ROWS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ROWS;}
+CASCADE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CASCADE;}
+HOUR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return HOUR;}
+SCHEMA {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SCHEMA;}
+CASCADED {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CASCADED;}
+IDENTITY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IDENTITY;}
+SCROLL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SCROLL;}
+CASE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CASE;}
+IMMEDIATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IMMEDIATE;}
+SECOND {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SECOND;}
+CAST {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CAST;}
+IN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IN;}
+SECTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SECTION;}
+CATALOG {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CATALOG;}
+INCLUDE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INCLUDE;}
+SELECT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SELECT;}
+CHAR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHAR;}
+INDEX {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INDEX;}
+SESSION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SESSION;}
+CHAR_LENGTH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHAR_LENGTH;}
+INDICATOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INDICATOR;}
+SESSION_USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SESSION_USER;}
+CHARACTER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHARACTER;}
+INITIALLY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INITIALLY;}
+SET {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SET;}
+CHARACTER_LENGTH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHARACTER_LENGTH;}
+INNER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INNER;}
+SIZE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SIZE;}
+CHECK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CHECK;}
+INPUT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INPUT;}
+SMALLINT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SMALLINT;}
+CLOSE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CLOSE;}
+INSENSITIVE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INSENSITIVE;}
+SOME {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SOME;}
+COALESCE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COALESCE;}
+INSERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INSERT;}
+SPACE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SPACE;}
+COLLATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COLLATE;}
+INT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INT;}
+SQL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SQL;}
+COLLATION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COLLATION;}
+INTEGER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INTEGER;}
+SQLCA {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SQLCA;}
+COLUMN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COLUMN;}
+INTERSECT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INTERSECT;}
+SQLCODE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SQLCODE;}
+COMMIT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COMMIT;}
+INTERVAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INTERVAL;}
+SQLERROR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SQLERROR;}
+CONNECT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONNECT;}
+INTO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return INTO;}
+SQLSTATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SQLSTATE;}
+CONNECTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONNECTION;}
+IS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return IS;}
+SQLWARNING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SQLWARNING;}
+CONSTRAINT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONSTRAINT;}
+ISOLATION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ISOLATION;}
+SUBSTRING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SUBSTRING;}
+CONSTRAINTS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONSTRAINTS;}
+JOIN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return JOIN;}
+SUM {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SUM;}
+CONTINUE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONTINUE;}
+KEY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return KEY;}
+SYSTEM_USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SYSTEM_USER;}
+CONVERT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CONVERT;}
+LANGUAGE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LANGUAGE;}
+TABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TABLE;}
+CORRESPONDING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CORRESPONDING;}
+LAST {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LAST;}
+TEMPORARY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TEMPORARY;}
+COUNT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return COUNT;}
+LEADING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LEADING;}
+THEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return THEN;}
+CREATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CREATE;}
+LEFT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LEFT;}
+TIME {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TIME;}
+CROSS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CROSS;}
+LEVEL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LEVEL;}
+TIMESTAMP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TIMESTAMP;}
+CURRENT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT;}
+LIKE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LIKE;}
+TIMEZONE_HOUR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TIMEZONE_HOUR;}
+CURRENT_DATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_DATE;}
+LOCAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LOCAL;}
+TIMEZONE_MINUTE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TIMEZONE_MINUTE;}
+CURRENT_TIME {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_TIME;}
+LOWER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return LOWER;}
+TO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TO;}
+CURRENT_TIMESTAMP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_TIMESTAMP;}
+MATCH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MATCH;}
+TRAILING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRAILING;}
+CURRENT_USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURRENT_USER;}
+MAX {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MAX;}
+TRANSACTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRANSACTION;}
+CURSOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CURSOR;}
+MIN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MIN;}
+TRANSLATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRANSLATE;}
+DATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DATE;}
+MINUTE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MINUTE;}
+TRANSLATION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRANSLATION;}
+DAY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DAY;}
+MODULE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MODULE;}
+TRIM {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRIM;}
+DEALLOCATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEALLOCATE;}
+MONTH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return MONTH;}
+TRUE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return TRUE;}
+DEC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEC;}
+NAMES {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NAMES;}
+UNION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UNION;}
+DECIMAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DECIMAL;}
+NATIONAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NATIONAL;}
+UNIQUE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UNIQUE;}
+DECLARE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DECLARE;}
+NATURAL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NATURAL;}
+UNKNOWN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UNKNOWN;}
+DEFAULT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEFAULT;}
+NCHAR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NCHAR;}
+UPDATE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UPDATE;}
+DEFERRABLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEFERRABLE;}
+NEXT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NEXT;}
+UPPER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return UPPER;}
+DEFERRED {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DEFERRED;}
+NO {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NO;}
+USAGE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return USAGE;}
+DELETE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DELETE;}
+NONE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NONE;}
+USER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return USER;}
+DESC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DESC;}
+NOT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NOT;}
+USING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return USING;}
+DESCRIBE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DESCRIBE;}
+NULL {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NULL;}
+VALUE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VALUE;}
+DESCRIPTOR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DESCRIPTOR;}
+NULLIF {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NULLIF;}
+VALUES {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VALUES;}
+DIAGNOSTICS {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DIAGNOSTICS;}
+NUMERIC {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return NUMERIC;}
+VARCHAR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VARCHAR;}
+DISCONNECT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DISCONNECT;}
+OCTET_LENGTH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OCTET_LENGTH;}
+VARYING {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VARYING;}
+DISTINCT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DISTINCT;}
+OF {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OF;}
+VIEW {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return VIEW;}
+DOMAIN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DOMAIN;}
+ON {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ON;}
+WHEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WHEN;}
+DOUBLE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DOUBLE;}
+ONLY {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ONLY;}
+WHENEVER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WHENEVER;}
+DROP {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return DROP;}
+OPEN {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPEN;}
+WHERE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WHERE;}
+ELSE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ELSE;}
+OPTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OPTION;}
+WITH {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WITH;}
+END {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return END;}
+OR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OR;}
+WORK {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WORK;}
+ORDER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ORDER;}
+WRITE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return WRITE;}
+ESCAPE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ESCAPE;}
+OUTER {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OUTER;}
+YEAR {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return YEAR;}
+EXCEPT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXCEPT;}
+OUTPUT {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return OUTPUT;}
+ZONE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ZONE;}
+EXCEPTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXCEPTION;}
 
 {D}+("."){D}*(("E"|"e")({D}+)) {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorFloatMas;}
 ({D}+)(".")({D}*)(("E"|"e")("+")({D}+))? {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Float;}
@@ -70,10 +465,8 @@ ZONE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yy
 ("-"{D}+)|{D}+ {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Numero;}
 
 {cadena} {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Cadena;}
-{cadenaApostrofe} {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorApostrofeCadena;}
-{cadenaEnter} {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorNuevaLineaCadena;}
-{cadenaIncompleta} {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorCadenaIncompleta;}
 
+"," {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Coma;}
 "=" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Igual;}
 "+" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Suma;}
 "-" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Resta;}
@@ -91,7 +484,6 @@ ZONE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yy
 "||" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Or;}
 "!" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return SignoAdmiracionInverso;}
 ";" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return PuntoComa;}
-"," {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Coma;}
 "." {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Punto;}
 "[" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return AbrirCorchete;}
 "]" {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return CerrarCorchete;}
