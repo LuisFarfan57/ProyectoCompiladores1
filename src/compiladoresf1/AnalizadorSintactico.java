@@ -488,12 +488,8 @@ public class AnalizadorSintactico {
         return true;
     }
     
-    boolean FCount2(){
-        if(token == Tokens.ClausulaKleant){
-            if(!verificarToken(Tokens.ClausulaKleant))
-                return false;
-        }
-        else if(token == Tokens.Multiplicacion){
+    boolean FCount2(){        
+        if(token == Tokens.Multiplicacion){
             if(!verificarToken(Tokens.Multiplicacion))
                 return false;
         }
@@ -508,7 +504,7 @@ public class AnalizadorSintactico {
                 return false;
         }
         else{
-            ErrorSintactico(Tokens.ClausulaKleant.toString() + " o " +
+            ErrorSintactico(
             Tokens.Multiplicacion.toString() + " 0 " +
                     Tokens.Numero.toString() + " 0 " +
                     Tokens.Float.toString() + " 0 " +
@@ -810,7 +806,7 @@ public class AnalizadorSintactico {
     }
     
     boolean Expression3(){
-        if(token == Tokens.Multiplicacion || token == Tokens.ClausulaKleant){
+        if(token == Tokens.Multiplicacion){
             if(!verificarToken(token))
                 return false;
             if(!FExpression())
@@ -866,6 +862,24 @@ public class AnalizadorSintactico {
         return true;
     }        
     
+    boolean LikeIgual(){
+        if(token == Tokens.LIKE){
+            if(!verificarToken(Tokens.LIKE))
+                return false;
+        }
+        else if(token == Tokens.Igual){
+            if(!verificarToken(Tokens.Igual))
+                return false;
+        }
+        else{
+            ErrorSintactico(Tokens.LIKE.toString() + " o " +
+                    Tokens.Igual.toString());
+            return false;
+        }
+        return true;
+    }
+            
+    
     boolean Predicado(){
         if(token == Tokens.Cadena || (token == Tokens.Identificador && (tokens.get(numeroToken + 1) == Tokens.NOT 
                 || tokens.get(numeroToken + 1) == Tokens.LIKE))){
@@ -873,7 +887,7 @@ public class AnalizadorSintactico {
                 return false;
             if(!Not())
                 return false;
-            if(!verificarToken(Tokens.LIKE))
+            if(!LikeIgual())
                 return false;
             if(!verificarToken(Tokens.Cadena))
                 return false;
@@ -931,7 +945,7 @@ public class AnalizadorSintactico {
             if(!verificarToken(Tokens.Cadena))
                 return false;
         }
-        else if(token == Tokens.ClausulaKleant || token == Tokens.Multiplicacion){
+        else if(token == Tokens.Multiplicacion){
             if(!verificarToken(token))
                 return false;
             if(!verificarToken(Tokens.Coma))
@@ -941,8 +955,7 @@ public class AnalizadorSintactico {
         }
         else{
             ErrorSintactico(Tokens.Identificador.toString() + " o " +
-                    Tokens.Multiplicacion.toString() + " o " +
-                    Tokens.ClausulaKleant.toString());
+                    Tokens.Multiplicacion.toString());                    
             return false;
         }
         
@@ -1827,13 +1840,23 @@ public class AnalizadorSintactico {
     }
     
     boolean OrderBy_exp1(){
-        if(token == Tokens.Identificador){
-            if(!TableRef())
+        if(token == Tokens.CASE || token == Tokens.AVG || token == Tokens.COUNT || token == Tokens.SUM || token == Tokens.MAX
+                || token == Tokens.MIN || token == Tokens.AbrirParentesis
+                || token == Tokens.Identificador || token == Tokens.CAST || token == Tokens.CONVERT){
+            if(!SelectExpression())
                 return false;
             if(!SigOrder())
                 return false;
             if(!AscDesc())
                 return false;
+        }
+        else if(token == Tokens.Cadena || token == Tokens.Multiplicacion || token == Tokens.Numero || token == Tokens.Float){
+            ErrorSintactico(Tokens.CASE.toString()
+                + " o " + Tokens.AVG.toString() + " o " + Tokens.COUNT.toString() + " o " + Tokens.SUM.toString() + " o " + Tokens.MAX.toString()
+                + " o " + Tokens.MIN.toString() 
+                + " o " + Tokens.Identificador.toString() + " o " + Tokens.CAST.toString()
+                + " o " + Tokens.CONVERT.toString() + " o " + Tokens.AbrirParentesis.toString());
+            return false;
         }
         return true;
     }
@@ -1921,25 +1944,26 @@ public class AnalizadorSintactico {
     }
     
     boolean PredicadoHaving(){
-        if(token == Tokens.AbrirParentesis || token == Tokens.Identificador
-                || token == Tokens.Numero || token == Tokens.Float || token == Tokens.Bit){
-            if(!Expression())
-                return false;
-            if(!StateLogic())
-                return false;
-        }
-        else if(token == Tokens.Cadena){
+        if(token == Tokens.Cadena || (token == Tokens.Identificador && (tokens.get(numeroToken + 1) == Tokens.NOT 
+                || tokens.get(numeroToken + 1) == Tokens.LIKE))){
             if(!verificarToken(Tokens.Cadena))
                 return false;
             if(!Not())
                 return false;
-            if(!verificarToken(Tokens.LIKE))
+            if(!LikeIgual())
                 return false;
             if(!verificarToken(Tokens.Cadena))
                 return false;
             if(!Escape_exp())
                 return false;
         }
+        else if(token == Tokens.AbrirParentesis || token == Tokens.Identificador
+                || token == Tokens.Numero || token == Tokens.Float || token == Tokens.Bit){
+            if(!Expression())
+                return false;
+            if(!StateLogic())
+                return false;
+        }        
         else if(token == Tokens.CONTAINS){
             if(!verificarToken(Tokens.CONTAINS))
                 return false;
@@ -2744,9 +2768,7 @@ public class AnalizadorSintactico {
             if(!verificarToken(Tokens.VIEW))
                 return false;
             if(!ColumnRef())
-                return false;
-            if(!Col())
-                return false;
+                return false;            
             if(!View2())
                 return false;
             if(!verificarToken(Tokens.AS))
@@ -2773,27 +2795,7 @@ public class AnalizadorSintactico {
         }
         return true;
     }        
-    
-    boolean Col(){
-        if(token == Tokens.Identificador){
-            if(!ColumnRef())
-                return false;
-            if(!View1())
-                return false;
-        }
-        return true;
-    }
-    
-    boolean View1(){
-        if(token == Tokens.Coma){
-            if(!verificarToken(Tokens.Coma))
-                return false;
-            if(!Col())
-                return false;            
-        }
-        return true;
-    }
-    
+        
     boolean View2(){
         if(token == Tokens.WITH){
             if(!verificarToken(Tokens.WITH))

@@ -456,9 +456,9 @@ ZONE {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yy
 EXCEPTION {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return EXCEPTION;}
 
 {D}+("."){D}*(("E"|"e")({D}+)) {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorFloatMas;}
-({D}+)(".")({D}*)(("E"|"e")("+")({D}+))? {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Float;}
-("."){D}+(("E"|"e")("+")({D}+))? {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorFloatPunto;}
-{D}+("."){D}*(("+")({D}+)) {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorFloatE;}
+({D}+)(".")({D}*)(("E"|"e")("+"|"-")({D}+))? {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Float;}
+("."){D}+(("E"|"e")("+"|"-")({D}+))? {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorFloatPunto;}
+{D}+("."){D}*(("+"|"-")({D}+)) {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return ErrorFloatE;}
 
 ({LM}|{Lm})({LM}|{Lm}|{D})* {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); if(yylength()>31){lexeme = yytext().substring(0,31); return ErrorCadenaLarga;}else{lexeme=yytext(); return Identificador;}}
 ("0") | ("1") | ("NULL") {linea = yyline + 1; columna = yycolumn + 1; columnaInicial = yycolumn + yylength(); lexeme=yytext(); return Bit;}
