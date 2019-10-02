@@ -1611,6 +1611,8 @@ public class AnalizadorSintactico {
                 return false;
             if(!verificarToken(Tokens.CerrarParentesis))
                 return false;
+            if(!verificarToken(Tokens.CerrarParentesis))
+                return false;
         }
         else{
             ErrorSintactico(Tokens.AbrirParentesis.toString());
@@ -3185,8 +3187,8 @@ public class AnalizadorSintactico {
                 return false;
             if(!ColumnRef())
                 return false;
-            if(!AlterViewCol())
-                return false;
+            /*if(!AlterViewCol())
+                return false;*/
             if(!verificarToken(Tokens.AS))
                 return false;
             if(!Select())
