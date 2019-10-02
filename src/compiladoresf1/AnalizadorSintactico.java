@@ -867,14 +867,8 @@ public class AnalizadorSintactico {
     }        
     
     boolean Predicado(){
-        if(token == Tokens.AbrirParentesis || token == Tokens.Identificador
-                || token == Tokens.Numero || token == Tokens.Float || token == Tokens.Bit){
-            if(!Expression())
-                return false;
-            if(!StateLogic())
-                return false;
-        }
-        else if(token == Tokens.Cadena){
+        if(token == Tokens.Cadena || (token == Tokens.Identificador && (tokens.get(numeroToken + 1) == Tokens.NOT 
+                || tokens.get(numeroToken + 1) == Tokens.LIKE))){
             if(!verificarToken(Tokens.Cadena))
                 return false;
             if(!Not())
@@ -886,6 +880,13 @@ public class AnalizadorSintactico {
             if(!Escape_exp())
                 return false;
         }
+        else if(token == Tokens.AbrirParentesis || token == Tokens.Identificador
+                || token == Tokens.Numero || token == Tokens.Float || token == Tokens.Bit){
+            if(!Expression())
+                return false;
+            if(!StateLogic())
+                return false;
+        }        
         else if(token == Tokens.CONTAINS){
             if(!verificarToken(Tokens.CONTAINS))
                 return false;
