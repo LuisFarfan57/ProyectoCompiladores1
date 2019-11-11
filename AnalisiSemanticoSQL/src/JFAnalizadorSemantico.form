@@ -26,22 +26,24 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" pref="699" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="txtRutaCup" alignment="0" pref="450" max="32767" attributes="0"/>
+                          <Component id="txtRutaFlex" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtRutaSQL" max="32767" attributes="0"/>
-                          <Component id="txtRutaFlex" max="32767" attributes="0"/>
-                          <Component id="txtRutaCup" pref="525" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="btnExaminarCup" alignment="0" pref="115" max="32767" attributes="0"/>
+                          <Component id="btnExaminarSQL" alignment="0" max="32767" attributes="0"/>
+                          <Component id="btnExaminarFlex" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="btnExaminarFlex" max="32767" attributes="0"/>
-                          <Component id="btnExaminarCup" alignment="0" max="32767" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="btnExaminarSQL" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnAnalizar" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="btnAnalizar" max="32767" attributes="0"/>
+                          <Component id="btnGenerarFlex" max="32767" attributes="0"/>
+                          <Component id="btnGenerarCup" alignment="0" pref="122" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -56,19 +58,21 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnExaminarFlex" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtRutaFlex" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnGenerarFlex" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="txtRutaCup" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnExaminarCup" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnGenerarCup" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="btnAnalizar" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="txtRutaSQL" alignment="3" max="32767" attributes="0"/>
                       <Component id="btnExaminarSQL" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnAnalizar" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="txtRutaSQL" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" pref="332" max="32767" attributes="0"/>
@@ -87,6 +91,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Seleccionar .flex"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExaminarFlexActionPerformed"/>
+      </Events>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <AuxValues>
@@ -97,6 +104,7 @@
       <SubComponents>
         <Component class="javax.swing.JTextArea" name="txtResultado">
           <Properties>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
           </Properties>
@@ -125,10 +133,26 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Seleccionar .cup"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExaminarCupActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnExaminarSQL">
       <Properties>
         <Property name="text" type="java.lang.String" value="Examinar"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnExaminarSQLActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnGenerarFlex">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Generar l&#xe9;xico"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnGenerarCup">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Generar sint&#xe1;ctico"/>
       </Properties>
     </Component>
   </SubComponents>

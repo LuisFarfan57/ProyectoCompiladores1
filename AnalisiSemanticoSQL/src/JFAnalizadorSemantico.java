@@ -1,3 +1,8 @@
+
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -35,13 +40,21 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
         txtRutaCup = new javax.swing.JTextField();
         btnExaminarCup = new javax.swing.JButton();
         btnExaminarSQL = new javax.swing.JButton();
+        btnGenerarFlex = new javax.swing.JButton();
+        btnGenerarCup = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         txtRutaSQL.setEditable(false);
 
         btnExaminarFlex.setText("Seleccionar .flex");
+        btnExaminarFlex.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExaminarFlexActionPerformed(evt);
+            }
+        });
 
+        txtResultado.setEditable(false);
         txtResultado.setColumns(20);
         txtResultado.setRows(5);
         jScrollPane1.setViewportView(txtResultado);
@@ -58,8 +71,22 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
         txtRutaCup.setEditable(false);
 
         btnExaminarCup.setText("Seleccionar .cup");
+        btnExaminarCup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExaminarCupActionPerformed(evt);
+            }
+        });
 
         btnExaminarSQL.setText("Examinar");
+        btnExaminarSQL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExaminarSQLActionPerformed(evt);
+            }
+        });
+
+        btnGenerarFlex.setText("Generar léxico");
+
+        btnGenerarCup.setText("Generar sintáctico");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -68,20 +95,22 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtRutaSQL)
-                            .addComponent(txtRutaFlex)
-                            .addComponent(txtRutaCup, javax.swing.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(txtRutaCup, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                            .addComponent(txtRutaFlex, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtRutaSQL))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnExaminarCup, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .addComponent(btnExaminarSQL, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnExaminarFlex, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnExaminarFlex, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnExaminarCup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnExaminarSQL)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnAnalizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                            .addComponent(btnAnalizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnGenerarFlex, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnGenerarCup, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -90,17 +119,19 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnExaminarFlex)
-                    .addComponent(txtRutaFlex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtRutaFlex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGenerarFlex))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtRutaCup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExaminarCup))
+                    .addComponent(btnExaminarCup)
+                    .addComponent(btnGenerarCup))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnAnalizar)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnExaminarSQL)
-                        .addComponent(btnAnalizar))
-                    .addComponent(txtRutaSQL))
+                        .addComponent(txtRutaSQL)
+                        .addComponent(btnExaminarSQL)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
                 .addContainerGap())
@@ -112,6 +143,51 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
     private void txtRutaFlexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRutaFlexActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtRutaFlexActionPerformed
+    
+    String rutaSQL;
+    private void btnExaminarSQLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExaminarSQLActionPerformed
+        // TODO add your handling code here:
+        JFileChooser dialogo = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(".sql", "sql");
+        File fichero = null;        
+        dialogo.setFileFilter(filtro);
+        int valor = dialogo.showOpenDialog(this);
+        if (valor == JFileChooser.APPROVE_OPTION) {
+            fichero = dialogo.getSelectedFile();
+            rutaSQL = fichero.getPath();
+            txtRutaSQL.setText(rutaSQL);
+        }
+    }//GEN-LAST:event_btnExaminarSQLActionPerformed
+
+    String rutaFlex;
+    private void btnExaminarFlexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExaminarFlexActionPerformed
+        // TODO add your handling code here:
+        JFileChooser dialogo = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(".flex", "Flex");
+        File fichero = null;        
+        dialogo.setFileFilter(filtro);
+        int valor = dialogo.showOpenDialog(this);
+        if (valor == JFileChooser.APPROVE_OPTION) {
+            fichero = dialogo.getSelectedFile();
+            rutaFlex = fichero.getPath();
+            txtRutaFlex.setText(rutaFlex);
+        }
+    }//GEN-LAST:event_btnExaminarFlexActionPerformed
+
+    String rutaCup;
+    private void btnExaminarCupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExaminarCupActionPerformed
+        // TODO add your handling code here:
+        JFileChooser dialogo = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter(".cup", "Cup");
+        File fichero = null;        
+        dialogo.setFileFilter(filtro);
+        int valor = dialogo.showOpenDialog(this);
+        if (valor == JFileChooser.APPROVE_OPTION) {
+            fichero = dialogo.getSelectedFile();
+            rutaCup = fichero.getPath();
+            txtRutaCup.setText(rutaCup);
+        }
+    }//GEN-LAST:event_btnExaminarCupActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,6 +229,8 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
     private javax.swing.JButton btnExaminarCup;
     private javax.swing.JButton btnExaminarFlex;
     private javax.swing.JButton btnExaminarSQL;
+    private javax.swing.JButton btnGenerarCup;
+    private javax.swing.JButton btnGenerarFlex;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea txtResultado;
     private javax.swing.JTextField txtRutaCup;
