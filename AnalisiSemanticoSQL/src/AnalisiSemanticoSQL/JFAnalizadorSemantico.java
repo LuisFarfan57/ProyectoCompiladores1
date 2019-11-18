@@ -1,5 +1,15 @@
+package AnalisiSemanticoSQL;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -60,6 +70,11 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
         jScrollPane1.setViewportView(txtResultado);
 
         btnAnalizar.setText("Analizar");
+        btnAnalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnalizarActionPerformed(evt);
+            }
+        });
 
         txtRutaFlex.setEditable(false);
         txtRutaFlex.addActionListener(new java.awt.event.ActionListener() {
@@ -85,8 +100,18 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
         });
 
         btnGenerarFlex.setText("Generar léxico");
+        btnGenerarFlex.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGenerarFlexActionPerformed(evt);
+            }
+        });
 
         btnGenerarCup.setText("Generar sintáctico");
+        btnGenerarCup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGenerarCupActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -177,7 +202,7 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
     String rutaCup;
     private void btnExaminarCupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExaminarCupActionPerformed
         // TODO add your handling code here:
-        JFileChooser dialogo = new JFileChooser();
+        /*JFileChooser dialogo = new JFileChooser();
         FileNameExtensionFilter filtro = new FileNameExtensionFilter(".cup", "Cup");
         File fichero = null;        
         dialogo.setFileFilter(filtro);
@@ -186,8 +211,88 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
             fichero = dialogo.getSelectedFile();
             rutaCup = fichero.getPath();
             txtRutaCup.setText(rutaCup);
-        }
+        }*/        
+        rutaCup = "src/AnalisiSemanticoSQL/Sintax.cup";
     }//GEN-LAST:event_btnExaminarCupActionPerformed
+
+    private void btnGenerarFlexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarFlexActionPerformed
+        // TODO add your handling code here:
+        try {
+            File archivo;
+            archivo = new File(rutaFlex);
+            JFlex.Main.generate(archivo);
+        } catch (Exception e) {
+            
+        }        
+    }//GEN-LAST:event_btnGenerarFlexActionPerformed
+
+    private void btnGenerarCupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarCupActionPerformed
+        // TODO add your handling code here:
+        try {
+            String[] rutaS = {"-parser", "Sintax", rutaCup};
+            java_cup.Main.main(rutaS);
+            
+            Path rutaSym = Paths.get("src/AnalisiSemanticoSQL/sym.java");
+
+            if(Files.exists(rutaSym)){
+
+                Files.delete(rutaSym);
+
+            }
+
+            Files.move(
+
+                    Paths.get("sym.java"), 
+
+                    Paths.get("src/AnalisiSemanticoSQL/sym.java")
+
+            );
+
+            Path rutaSintax = Paths.get("src/AnalisiSemanticoSQL/Sintax.java");
+
+            if(Files.exists(rutaSintax)){
+
+                Files.delete(rutaSintax);
+
+            }
+
+            Files.move(
+
+                    Paths.get("Sintax.java"), 
+
+                    Paths.get("src/AnalisiSemanticoSQL/Sintax.java")
+
+            );
+        } catch (Exception e) {
+            
+        }        
+    }//GEN-LAST:event_btnGenerarCupActionPerformed
+
+    private void btnAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnalizarActionPerformed
+        // TODO add your handling code here:
+        Reader lector;
+
+            String errors = "";
+
+            try {
+                lector = new BufferedReader(new FileReader(rutaSQL));
+                Sintax s = new Sintax(new LexerCup(lector));
+                try {
+                    s.parse();
+                    errors = s.obtenerErrores();
+                    if(errors.length() > 0){
+                        txtResultado.setText(s.obtenerErrores());
+                    }
+                    else{
+                        txtResultado.setText("Analisis Exitoso :)");
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(JFAnalizadorSemantico.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(JFAnalizadorSemantico.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }//GEN-LAST:event_btnAnalizarActionPerformed
 
     /**
      * @param args the command line arguments

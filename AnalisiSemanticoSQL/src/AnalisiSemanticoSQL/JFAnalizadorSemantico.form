@@ -115,6 +115,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Analizar"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAnalizarActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="txtRutaFlex">
       <Properties>
@@ -149,11 +152,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Generar l&#xe9;xico"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnGenerarFlexActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnGenerarCup">
       <Properties>
         <Property name="text" type="java.lang.String" value="Generar sint&#xe1;ctico"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnGenerarCupActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

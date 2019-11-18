@@ -1,0 +1,336 @@
+terminal ADD, EXTERNAL, PROCEDURE, ALL, OUT, READONLY, ENCRYPTION, RETURNS, 
+SCHEMABINDING, CALLED, INLINE, CALLER, SELF, OWNER, RECOMPILE, MARK, FORWARDONLY, 
+STATIC, KEYSET, DYNAMIC, FASTFORWARD, READ_ONLY, SCROLL_LOCKS, OPTIMISTIC, 
+TYPE_WARNING, FETCH, PUBLIC, ALTER, FILE, RAISERROR, AND, FILLFACTOR, READ, ANY, FOR, 
+READTEXT, TYPEWARNING, AS, FOREIGN, RECONFIGURE, ASC, FREETEXT, REFERENCES, AUTHORIZATION,
+FREETEXTTABLE, REPLICATION, BACKUP, FROM, RESTORE, BEGIN, FULL, RESTRICT, BETWEEN,
+FUNCTION, RETURN, BREAK, GOTO, REVERT, BROWSE, GRANT, REVOKE, BULK, GROUP, RIGHT,
+BY, HAVING, ROLLBACK, CASCADE, HOLDLOCK, ROWCOUNT, CASE, IDENTITY, ROWGUIDCOL,
+CHECK, IDENTITY_INSERT, RULE, CHECKPOINT, IDENTITYCOL, SAVE, CLOSE, IF, SCHEMA,
+CLUSTERED, IN, SECURITYAUDIT, COALESCE, INDEX, SELECT, COLLATE, INNER, SEMANTICKEYPHRASETABLE,
+COLUMN, INSERT, SEMANTICSIMILARITYDETAILSTABLE, COMMIT, INTERSECT, SEMANTICSIMILARITYTABLE,
+COMPUTE, INTO, SESSION_USER, CONSTRAINT, IS, SET, CONTAINS, JOIN, SETUSER, CONTAINSTABLE, KEY,
+SHUTDOWN, CONTINUE, KILL, SOME, CONVERT, LEFT, STATISTICS, CREATE, LIKE, SYSTEM_USER, CROSS, LINENO,
+TABLE, CURRENT, LOAD, TABLESAMPLE, CURRENT_DATE, MERGE, TEXTSIZE, CURRENT_TIME, NATIONAL,
+THEN, CURRENT_TIMESTAMP, NOCHECK, TO, CURRENT_USER, NONCLUSTERED, TOP, CURSOR, NOT, TRAN,
+DATABASE, NULL, TRANSACTION, DBCC, NULLIF, TRIGGER, DEALLOCATE, OF, TRUNCATE, DECLARE, OFF,
+TRY_CONVERT, DEFAULT, OFFSETS, TSEQUAL, DELETE, ON, UNION, DENY, OPEN, UNIQUE, DESC,
+OPENDATASOURCE, UNPIVOT, DISK, OPENQUERY, UPDATE, DISTINCT, OPENROWSET, UPDATETEXT,
+DISTRIBUTED, OPENXML, USE, DOUBLE, OPTION, USER, DROP, OR, VALUES, DUMP, ORDER, VARYING,
+ELSE, OUTER, VIEW, END, OVER, WAITFOR, ERRLVL, PERCENT, WHEN, ESCAPE, PIVOT, WHERE, EXCEPT,
+PLAN, WHILE, EXEC, PRECISION, WITH, EXECUTE, PRIMARY, WITHINGROUP, EXISTS, PRINT, WRITETEXT,
+EXIT, PROC, INCLUDE, IMMEDIATE, GO, SUM, AVG, COUNT, MAX, MIN, KB, GB, TB, MB, BIGINT, INT,
+SMALLINT, TINYINT, BIT, DECIMAL, MONEY, NUMERIC, SMALLMONEY, FLOAT, REAL, DATE, DATETIME,
+DATETIME2, DATETIMEOFFSET, SMALLDATETIME, TIME, CHAR, TEXT, VARCHAR, NCHAR, NTEXT, NVARCHAR,
+BINARY, IMAGE, VARBINARY, FILENAME, NAME, NAMES, SIZE, MAXSIZE, FILEGROWTH, UNLIMITED, OUTPUT, INPUT, 
+LOCAL, GLOBAL, SCROLL, SCROLLLOCKS, Suma, Resta, Mul, Div, Porce, PuntoYComa, Coma, Punto, Acorchete,
+Ccorchete, Aparentesis, Cparentesis, Allave, Cllave, Dcorchete, Dparentesis, Dllaves, Arroba,
+Hashtag, Dhashtag, Menor, MenorIgual, Mayor, MayorIgual, Digual, Diferente, Dampersand, Dbarra,
+Exclamacion, Igual, Varchar, VarcharError, ERROR, Float, Integer, Identificador, IdentificadorError, Bit;
+
+non terminal Inicio1, Inicio2, SentenciasDML, SentenciasDDL, SentenciasTCL, SentenciasTSQL, 
+Fin, ID, IDL1, IDL2, IDL3, IDL4, IDL5, IDL6, IFExists, Var, TipoDeDato, TipoDeDato1, TipoDeDato3, 
+TipoDeDato2, TipoDeDato4, Drop, DropOptions, DropTable, DropTable1, DropView, DropView1, DropUser, 
+DropDataBase, DropDataBase1, DropIndex, DropIndex1, DropIndex2, Truncate, AsElement, AsElement1, 
+Operacion, Operacion2, Operacion1, Operacion4, Operacion3, Operacion5, Operacion6, Operaciones, 
+Not, Top, Top1, Condicion, Condicion1, Condicion2, Condicion3, Condicion4, Condicion5, LikeOption, Where, Select, Select1, 
+Having, OrderBy, OrderBy1, OrderBy2, OrderBy3, GroupBy, GroupBy1, SelectFrom, SelectFrom1, SelectFromJoin, 
+JoinType, JoinOuter, SelectColumnas, SelectColumnas1, ListaColumnas, ListaColumnas1, ListaColumnas2, Insert, 
+InsertInto, InsertListaColumna, InsertTipo, InsertTipo1, InsertTipo2, InsertValores, InsertValores1, 
+Delete, DeleteFrom, Delete1, Delete2, Delete3, DeleteServer, Update, Update1, Update2, Update3, UpdateFrom, 
+Create, Create1, CreateUser, CreateDataBase, CreateDataBase1, CreateDataBase2, CollateDataBase, Primary, 
+Definitions, Definition, DefinitionName, FileName, DefinitionOptions, DefinitionOptions1, DefinitionOption, Size, Size1, Size2, 
+MaxSize, MaxSize1, MaxSize2, FileGrowth, FileGrowth1, CreateView, CreateIndex, CreateIndex1, IndexColumna, 
+IndexColumna1, IndexColumna2, IndexInclude, OnOption, CreateTable, TableOption, TableElement1, TableElement2, 
+TableElement3, TableElement4, TableElement5, TableElement6, DefinicionColumna, DefinicionColumna1, DefinicionColumna2, DefinicionColumna3, DefinicionColumna4, 
+DefinicionColumna5, DefinicionColumna6, DefinicionColumna7, DefinicionColumna8, DefinicionColumna9, DefinicionColumna10, DefinicionColumna11, DefinicionColumna12, ConstraintColumna, ConstraintColumna1, ConstraintColumna2, ConstraintColumna3, 
+ConstraintColumna4, ConstraintColumna5, ConstraintColumna6, ConstraintColumna7, ConstraintColumna8, 
+ConstraintColumna9, ConstraintColumna10, ConstraintTabla, ConstraintTabla1, ConstraintTabla2, ConstraintTabla3, ConstraintTabla4, 
+ConstraintTabla5, IndexTabla, Alter, Alter1, AlterDataBase, AlterDataBase1, AlterDataBase2, AlterUser, 
+AlterView, AlterView1, AlterTable, AlterTable1, AlterColumna, AlterColumna1, AlterColumna2, AlterColumna3, 
+AlterColumna4, AlterTableDrop, AlterTableDrop1, AlterTableDrop2, AlterTableDrop3, AlterTableDrop4, AlterTableDrop5, AlterTableDrop6, Transact, 
+Transact1, Transact2, Transact3, TransactName, Name, Name1, Rollback, Rollback1, Commit, Commit1, Save, OrAlter,
+Number, ExecuteProcedure, ExecuteProcedure1, ExecuteProcedure2, ExecuteProcedure3, ExecuteProcedure4, ExecuteProcedure5, ExecuteProcedureParam, 
+ExecuteProcedureParam1, ExecuteProcedureParam2, ExecuteProcedureParam3, ExecuteProcedureParam4, 
+Procedure, ProcedureName, ProcedureNum, ProcedureParam, ProcedureParam1, ProcedureParam2, ProcedureDataType, 
+ProcedureDataType1, ProcedureDataType2, ProcedureDataType3, ProcedureOption, ProcedureOption1, ProcedureOption2, 
+ProcedureOption3, Execute, ExecuteType, ProcedureReplication, BeginProcedure, EndProcedure, ProcedureStatement, 
+ProcedureStatement1, ProcedureStatement2, Function, FunctionParam, FunctionParam1, FunctionParam2, 
+FunctionParam3, AsWord, ReadOnlyWord, ReturnType, ReturnTable, ReturnTable1, ReturnTable2, FunctionOption, 
+SelectOption, ReturnData, ReturnData1, Cursor, Cursor1, Cursor2, Cursor3, Cursor4, Cursor5, Cursor6, Cursor7;
+
+non termianl SimboloTabla DeclareDefinition
+
+
+precedence left AND, OR, Aparentesis, PuntoYComa, Arroba, Identificador, Acorchete ;
+
+start with Inicio1;
+
+Inicio1 ::= Inicio2 Fin Inicio1 |
+            error Fin Inicio1 | ;
+Inicio2 ::= SentenciasDDL|
+            SentenciasTCL|
+            Function ;
+SentenciasDDL ::= Create|
+                  Drop ;
+SentenciasTCL ::= Transact|
+                  Rollback|
+                  Commit|
+                  Save ;
+Fin ::= PuntoYComa|
+        GO ;
+ID ::= Acorchete Identificador Ccorchete |
+       Identificador ;
+IDL1 ::= ID IDL2 ;
+IDL2 ::= Punto ID| ;
+IDL3 ::= ID IDL4 ;
+IDL4 ::= Punto IDL1| ;
+IDL5 ::= ID IDL6 ;
+IDL6 ::= Punto IDL3| ;
+IFExists ::= IF EXISTS ;
+Var ::= Arroba Identificador:valor {: RESULT = new String[3];
+                                      RESULT[0] = "@" + Identificador.valor;
+                                      RESULT[1] = ""  :} ; 
+TipoDeDato ::= TipoDeDato1 TipoDeDato2 ;
+TipoDeDato1 ::= TipoDeDato3|
+                Acorchete TipoDeDato3 Ccorchete ;
+TipoDeDato3 ::= BIGINT|
+                INT|
+                SMALLINT|
+                TINYINT|
+                BIT|
+                DECIMAL Aparentesis Number Coma Number Cparentesis |
+                MONEY|
+                NUMERIC Aparentesis Number Coma Number Cparentesis |
+                SMALLMONEY|
+                FLOAT|
+                FLOAT Aparentesis Number Cparentesis |
+                REAL|
+                DATE|
+                DATETIME|
+                DATETIME2|
+                DATETIMEOFFSET|
+                SMALLDATETIME|
+                TIME|
+                CHAR Aparentesis Number Cparentesis |
+                TEXT|
+                VARCHAR Aparentesis Number Cparentesis |
+                VARCHAR Aparentesis MAX Cparentesis |
+                NCHAR Aparentesis Number Cparentesis |
+                NTEXT|
+                NVARCHAR Aparentesis Number Cparentesis |
+                NVARCHAR Aparentesis MAX Cparentesis |
+                BINARY|
+                IMAGE|
+                VARBINARY ;
+TipoDeDato2 ::= Aparentesis Integer TipoDeDato4 Cparentesis| ;
+TipoDeDato4 ::= Coma Integer | ;
+
+InsertTipo1 ::= DEFAULT |
+                Integer |
+                Float |
+                Varchar |
+                Bit |
+                Var |
+                NULL;
+
+
+Condicion ::= Aparentesis Condicion Cparentesis Condicion1 |
+              Not Condicion2 Condicion1 ;
+Condicion1 ::= Condicion5 Condicion | ;
+Condicion2 ::= Operacion Condicion3 ;
+Condicion3 ::= Menor Operacion |
+               MenorIgual Operacion |
+               Mayor Operacion |
+               MayorIgual Operacion |
+               Digual Operacion |
+               Diferente Operacion |
+               Dampersand Operacion |
+               Dbarra Operacion |
+               Exclamacion Operacion |
+               Igual Operacion |
+               IS Not NULL |
+               Condicion4 ;
+Condicion4 ::= Not IN Aparentesis Operacion Operaciones Cparentesis |
+               Not BETWEEN Operacion AND Operacion |
+               Not LIKE LikeOption Varchar LikeOption ;
+LikeOption ::= Porce | ;
+Condicion5 ::= AND | OR ;
+Where ::= WHERE Condicion | ;
+
+AsElement ::= AS AsElement1 |
+              AsElement1 | ;
+AsElement1 ::= ID |
+               Varchar ;
+Operacion ::= Operacion1 Operacion2 ;
+Operacion2 ::= Suma Operacion1 Operacion2 |
+               Resta Operacion1 Operacion2 | ;
+Operacion1 ::= Operacion3 Operacion4 ;
+Operacion4 ::= Mul Operacion3 Operacion4 |
+               Div Operacion3 Operacion4 | ;
+Operacion3 ::= Aparentesis Operacion Cparentesis |
+               Operacion5 ;
+Operacion5 ::= IDL5 |
+               Integer |
+               Float |
+               Varchar |
+               Bit |
+               Var |
+               NULL |
+               SUM Aparentesis Operacion6 |
+               AVG Aparentesis Operacion6 |
+               MIN Aparentesis Operacion6 |
+               MAX Aparentesis Operacion6 |
+               COUNT Aparentesis Operacion6 ;
+Operacion6 ::= IDL5 Cparentesis |
+               Number Cparentesis |
+               Mul Cparentesis ;
+Operaciones ::= Coma Operacion Operaciones | ;
+Not ::= NOT | ;
+
+
+Drop ::= DROP DropOptions ;
+DropOptions ::= DropTable|
+                DropUser|
+                DropView|
+                DropDataBase|
+                DropIndex ;
+DropTable ::= TABLE AlterTableDrop5 IDL3 DropTable1 ;
+DropTable1 ::= Coma IDL3 DropTable1 | ;
+DropView ::= VIEW AlterTableDrop5 IDL1 DropView1 ;
+DropView1 ::= Coma IDL1 DropView1 | ;
+DropUser ::= USER AlterTableDrop5 ID ;
+DropDataBase ::= DATABASE AlterTableDrop5 ID DropDataBase1 ;
+DropDataBase1 ::= Coma ID DropDataBase1 | ;
+DropIndex ::= INDEX AlterTableDrop5 DropIndex1 DropIndex2 ;
+DropIndex1 ::= ID ON IDL3 ;
+DropIndex2 ::= Coma DropIndex1 DropIndex2 | ;
+AlterTableDrop5 ::= IFExists                                                                                                        {: :}
+                    | 
+                    ;
+
+Create ::= CREATE Create1 ;
+Create1 ::= Procedure |
+            Function |
+            CreateTable |
+            CreateDataBase |
+            CreateUser |
+            CreateView |
+            CreateIndex ;
+CreateUser ::= USER ID ;
+CreateDataBase ::= DATABASE ID CreateDataBase1 ;
+CreateDataBase1 ::= CreateDataBase2 CollateDataBase ;
+CreateDataBase2 ::= ON Primary Definitions | ;
+CollateDataBase ::= COLLATE ID | ;
+Primary ::= PRIMARY | ;
+Definitions ::= Definition Coma Definitions |
+                Definition ;
+Definition ::= Aparentesis DefinitionName Igual Varchar Coma FileName Igual Varchar DefinitionOptions Cparentesis ;
+DefinitionName ::= NAME | NAMES ;
+FileName ::= FILENAME |
+             FILE ;
+DefinitionOptions ::= Coma DefinitionOption DefinitionOptions | ;
+DefinitionOption ::= Size |
+                     MaxSize |
+                     FileGrowth ;
+Size ::= SIZE Igual Integer Size1 ;
+Size1 ::= Size2 | ;
+Size2 ::= KB |
+          MB |
+          GB |
+          TB ;
+MaxSize ::= MAXSIZE Igual MaxSize1 ;
+MaxSize1 ::= Integer MaxSize2 ;
+MaxSize2 ::= Size2 |
+             UNLIMITED | ;
+FileGrowth ::= FILEGROWTH Igual Integer FileGrowth1 ;
+FileGrowth1 ::= Size2 |
+                Porce | ;
+CreateView ::= VIEW IDL1 AS Select ;
+CreateIndex ::= CreateIndex1 ConstraintColumna3 INDEX ID ON IDL3 IndexColumna IndexInclude Where OnOption ;
+CreateIndex1 ::= UNIQUE | ;
+IndexColumna ::= Aparentesis IndexColumna1 Cparentesis ;
+IndexColumna1 ::= ID OrderBy2 IndexColumna2 ;
+IndexColumna2 ::= Coma ID OrderBy2 IndexColumna2 | ;
+IndexInclude ::= INCLUDE ListaColumnas | ;
+OnOption ::= ON ID Aparentesis ID Cparentesis | ;
+CreateTable ::= TABLE IDL3 Aparentesis TableElement2 TableElement3 Cparentesis TableOption ;
+TableOption ::= ON PRIMARY | ;
+TableElement1 ::= NOT TableElement4 | NULL | ;
+TableElement4 ::= FOR REPLICATION TableElement5 | NULL ;
+TableElement5 ::= NOT TableElement6 | NULL | ;
+TableElement6 ::= NULL ;
+TableElement2 ::= DefinicionColumna |
+                  ConstraintTabla |
+                  IndexTabla ;
+TableElement3 ::= Coma TableElement2 TableElement3 | ;
+
+
+DefinicionColumna ::= ID TipoDeDato DefinicionColumna1 DefinicionColumna6 ;
+DefinicionColumna1 ::= COLLATE ID | ;
+DefinicionColumna2 ::= IDENTITY DefinicionColumna5 | ;
+DefinicionColumna3 ::= NULL |
+                       NOT NULL | ;
+DefinicionColumna4 ::= ROWGUIDCOL | ;
+DefinicionColumna5 ::= Aparentesis Bit Coma Bit Cparentesis | ;
+DefinicionColumna6 ::= CONSTRAINT ID DefinicionColumna12 | DefinicionColumna7 | ;
+DefinicionColumna7 ::= IDENTITY DefinicionColumna5 TableElement1 DefinicionColumna4 ConstraintColumna |
+                       DefinicionColumna9 DefinicionColumna10 DefinicionColumna4 ConstraintColumna |
+                       ROWGUIDCOL ConstraintColumna |
+                       ConstraintColumna1 ConstraintColumna2 ConstraintColumna ;
+DefinicionColumna8 ::= Integer |
+                       Float |
+                       Varchar |
+                       Bit |
+                       NULL ;
+DefinicionColumna9 ::= NOT | ;
+DefinicionColumna10 ::= NULL | 
+                        FOR REPLICATION DefinicionColumna11 ;
+DefinicionColumna11 ::= NOT NULL | 
+                        NULL | ;
+DefinicionColumna12 ::= DEFAULT DefinicionColumna8 DefinicionColumna2 TableElement1 DefinicionColumna4 ConstraintColumna ;
+
+
+ConstraintColumna ::= ConstraintColumna1 ConstraintColumna2 ConstraintColumna | ;
+ConstraintColumna1 ::= CONSTRAINT ID | ;
+ConstraintColumna2 ::= ConstraintColumna10 ConstraintColumna3 |
+                       ConstraintColumna4 REFERENCES IDL1 ConstraintColumna5 ConstraintColumna6 TableElement1 |
+                       CHECK TableElement1 Aparentesis Condicion Cparentesis ;
+ConstraintColumna3 ::= CLUSTERED |
+                       NONCLUSTERED | ;
+ConstraintColumna4 ::= FOREIGN KEY | ;
+ConstraintColumna5 ::= Aparentesis ID Cparentesis | ;
+ConstraintColumna6 ::= ON ConstraintColumna7 ConstraintColumna6 | ;
+ConstraintColumna7 ::= DELETE ConstraintColumna8 | UPDATE ConstraintColumna8 ;
+ConstraintColumna8 ::= CASCADE |
+                       SET ConstraintColumna9 ;
+ConstraintColumna9 ::= NULL |
+                       DEFAULT ;
+ConstraintColumna10 ::= PRIMARY KEY | UNIQUE ;
+
+ConstraintTabla ::= ConstraintColumna1 ConstraintTabla1 ;
+ConstraintTabla1 ::= PRIMARY KEY ConstraintColumna3 ConstraintTabla2 |
+                     UNIQUE ConstraintColumna3 ConstraintTabla2 |
+                     FOREIGN KEY ConstraintTabla3 REFERENCES IDL1 ConstraintColumna5 ConstraintColumna6 TableElement1 |
+                     CHECK TableElement1 Aparentesis Condicion Cparentesis ;
+ConstraintTabla2 ::= Aparentesis ID OrderBy2 ConstraintTabla5 Cparentesis ;
+ConstraintTabla3 ::= Aparentesis ID ConstraintTabla4 Cparentesis ;
+ConstraintTabla4 ::= Coma ID ConstraintTabla4 | ;
+ConstraintTabla5 ::= Coma ID OrderBy2 ConstraintTabla5 | ;
+
+IndexTabla ::= INDEX ID ConstraintColumna3 ConstraintTabla2 ;
+
+DeclareDefinition ::= DECLARE DeclareDefinition5 ;
+DeclareDefinition1 ::= AS TipoDeDato3 DeclareDefinition2 |
+                       TipoDeDato3 DeclareDefinition2 ;
+DeclareDefinition2 ::= Igual InsertTipo1 | 
+                       ;
+DeclareDefinition3 ::= Var DeclareDefinition4 ;
+DeclareDefinition4 ::= Coma Var DeclareDefinition4 |
+                       ;
+DeclareDefinition5 ::= DeclareDefinition7 DeclareDefinition6 ;
+DeclareDefinition6 ::= Coma DeclareDefinition7 DeclareDefinition6 |
+                       ;
+DeclareDefinition7 ::= DeclareDefinition3 DeclareDefinition1 ;
+
+
