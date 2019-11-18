@@ -150,8 +150,7 @@ terminal float Float;
 terminal int Integer;
 
 non terminal SimboloTabla Inicio1, Inicio2, SentenciasDML, SentenciasDDL, SentenciasTCL, SentenciasTSQL, 
-Fin, ID, IDL1, IDL2, IDL3, IDL4, IDL5, IDL6, IFExists, Var, TipoDeDato, TipoDeDato1, TipoDeDato3, 
-TipoDeDato2, TipoDeDato4, Drop, DropOptions, DropTable, DropTable1, DropView, DropView1, DropUser, 
+Fin, ID, IDL1, IDL2, IDL3, IDL4, IDL5, IDL6, IFExists, Var, Drop, DropOptions, DropTable, DropTable1, DropView, DropView1, DropUser, 
 DropDataBase, DropDataBase1, DropIndex, DropIndex1, DropIndex2, Truncate, AsElement, AsElement1, 
 Operacion, Operacion2, Operacion1, Operacion4, Operacion3, Operacion5, Operacion6, Operaciones, 
 Not, Top, Top1, Condicion, Condicion1, Condicion2, Condicion3, Condicion4, Condicion5, LikeOption, Where, Select, Select1, 
@@ -183,6 +182,8 @@ SelectOption, ReturnData, ReturnData1, Cursor, Cursor1, Cursor2, Cursor3, Cursor
 non terminal SimboloTabla DeclareDefinition, DeclareDefinition1, DeclareDefinition2, DeclareDefinition3, DeclareDefinition4
               , DeclareDefinition5, DeclareDefinition6, DeclareDefinition7, Use;
 
+non terminal String TipoDeDato, TipoDeDato1, TipoDeDato2, TipoDeDato3, TipoDeDato4;
+
 
 precedence left AND, OR, Aparentesis, PuntoYComa, Arroba, Identificador, Acorchete ;
 
@@ -211,6 +212,8 @@ IDL5 ::= ID IDL6 ;
 IDL6 ::= Punto IDL3| ;
 IFExists ::= IF EXISTS ;
 
+Number ::= Integer | Bit;
+
 Var ::= Arroba Identificador:e 
         {:
           if(!TablaSimbolos.buscarIdentificador(e.toString(), "Variable")){
@@ -225,48 +228,129 @@ Var ::= Arroba Identificador:e
           }          
         :};
 
-TipoDeDato ::= TipoDeDato1 TipoDeDato2 ;
-TipoDeDato1 ::= TipoDeDato3|
-                Acorchete TipoDeDato3 Ccorchete ;
-TipoDeDato3 ::= BIGINT|
-                INT|
-                SMALLINT|
-                TINYINT|
-                BIT|
-                DECIMAL Aparentesis Number Coma Number Cparentesis|
-                MONEY|
-                NUMERIC Aparentesis Number Coma Number Cparentesis |
-                SMALLMONEY|
-                FLOAT|
-                FLOAT Aparentesis Number Cparentesis |
-                REAL|
-                DATE|
-                DATETIME|
-                DATETIME2|
-                DATETIMEOFFSET|
-                SMALLDATETIME|
-                TIME|
-                CHAR Aparentesis Number Cparentesis |
-                TEXT|
-                VARCHAR Aparentesis Number Cparentesis |
-                VARCHAR Aparentesis MAX Cparentesis |
-                NCHAR Aparentesis Number Cparentesis |
-                NTEXT|
-                NVARCHAR Aparentesis Number Cparentesis |
-                NVARCHAR Aparentesis MAX Cparentesis |
-                BINARY|
-                IMAGE|
-                VARBINARY ;
-TipoDeDato2 ::= Aparentesis Integer TipoDeDato4 Cparentesis| ;
-TipoDeDato4 ::= Coma Integer | ;
+TipoDeDato ::= TipoDeDato1:e {: RESULT = e; :};
+TipoDeDato1 ::= TipoDeDato3:e {: RESULT = e; :}|
+                Acorchete TipoDeDato3 Ccorchete {: RESULT = e; :};
+TipoDeDato3 ::= BIGINT  {: 
+                            RESULT = "Integer";                            
+                        :}|
+                INT     {: 
+                            RESULT = "Integer";                            
+                        :}|
+                SMALLINT{: 
+                            RESULT = "Integer";                            
+                        :}|
+                TINYINT {: 
+                            RESULT = "Integer";                            
+                        :}|
+                Bit     {: 
+                            RESULT = "Bit";                            
+                        :}|
+                DECIMAL Aparentesis Number Coma Number Cparentesis  {: 
+                                                                        RESULT = "Float";
+                                                                    :}|
+                MONEY   {: 
+                            RESULT = "Float";                            
+                        :}|
+                NUMERIC Aparentesis Number Coma Number Cparentesis  {: 
+                                                                        RESULT = "Big int";                            
+                                                                    :}|
+                SMALLMONEY  {: 
+                                RESULT = "Float";                            
+                            :}|
+                FLOAT   {: 
+                            RESULT = "Float";                            
+                        :}|
+                FLOAT Aparentesis Number Cparentesis  {: 
+                                                          RESULT = "Float";                            
+                                                      :}|
+                REAL    {: 
+                            RESULT = "Float";                            
+                        :}|
+                DATE    {: 
+                            RESULT = "String";                            
+                        :}|
+                DATETIME{: 
+                            RESULT = "String";                            
+                        :}|
+                DATETIME2 {: 
+                              RESULT = "String";                            
+                          :}|
+                DATETIMEOFFSET  {: 
+                                    RESULT = "String";                            
+                                :}|
+                SMALLDATETIME   {: 
+                                    RESULT = "String";                            
+                                :}|
+                TIME    {: 
+                            RESULT = "String";                            
+                        :}|
+                CHAR Aparentesis Number Cparentesis {: 
+                                                          RESULT = "String";                            
+                                                    :}|
+                TEXT      {: 
+                              RESULT = "String";                            
+                          :}|
+                VARCHAR Aparentesis Number Cparentesis  {: 
+                                                            RESULT = "String";                            
+                                                        :}|
+                VARCHAR Aparentesis MAX Cparentesis {: 
+                                                          RESULT = "String";                            
+                                                    :}|
+                NCHAR Aparentesis Number Cparentesis  {: 
+                                                          RESULT = "String";                            
+                                                      :}|
+                NTEXT   {: 
+                            RESULT = "String";                            
+                        :}|
+                NVARCHAR Aparentesis Number Cparentesis {: 
+                                                              RESULT = "String";                            
+                                                        :}|
+                NVARCHAR Aparentesis MAX Cparentesis  {: 
+                                                          RESULT = "String";                            
+                                                      :}|
+                BINARY  {: 
+                            RESULT = "Integer";                            
+                        :}|
+                IMAGE   {: 
+                            RESULT = "String";                            
+                        :}|
+                VARBINARY {: 
+                              RESULT = "Integer";
+                          :};
 
-InsertTipo1 ::= DEFAULT |
-                Integer |
-                Float |
-                Varchar |
-                Bit |
-                Var |
-                NULL;
+InsertTipo1 ::= DEFAULT {: 
+                            RESULT = new TablaSimbolo();
+                            RESULT.setTipo("Default");
+                        :}|
+                Integer:e {:
+                            RESULT = new TablaSimbolo();
+                            RESULT.setTipo("Integer");
+                            RESULT.setValor(e.toString());
+                        :}|
+                Float:e {:
+                            RESULT = new TablaSimbolo();
+                            RESULT.setTipo("Float");
+                            RESULT.setValor(e.toString());
+                        :}|
+                Varchar:e {:
+                              RESULT = new TablaSimbolo();
+                              RESULT.setTipo("String");
+                              RESULT.setValor(e.toString());
+                          :}|
+                Bit:e {:
+                            RESULT = new TablaSimbolo();
+                            RESULT.setTipo("Bit");
+                            RESULT.setValor(e.toString());
+                      :}|
+                Var:e {:
+                            RESULT = new TablaSimbolo();
+                            RESULT = e;
+                      :}|
+                NULL {:
+                          RESULT = new TablaSimbolo();
+                          RESULT.setTipo("Null");
+                     :};
 
 
 Condicion ::= Aparentesis Condicion Cparentesis Condicion1 |
@@ -310,15 +394,7 @@ Operacion5 ::= IDL5 |
                Varchar |
                Bit |
                Var |
-               NULL |
-               SUM Aparentesis Operacion6 |
-               AVG Aparentesis Operacion6 |
-               MIN Aparentesis Operacion6 |
-               MAX Aparentesis Operacion6 |
-               COUNT Aparentesis Operacion6 ;
-Operacion6 ::= IDL5 Cparentesis |
-               Number Cparentesis |
-               Mul Cparentesis ;
+               NULL |               
 Operaciones ::= Coma Operacion Operaciones | ;
 Not ::= NOT | ;
 
@@ -457,10 +533,12 @@ IndexTabla ::= INDEX ID ConstraintColumna3 ConstraintTabla2 ;
 DeclareDefinition ::= DECLARE DeclareDefinition5;                      
 DeclareDefinition1 ::= AS TipoDeDato3 DeclareDefinition2 |
                        TipoDeDato3 DeclareDefinition2 ;
-DeclareDefinition2 ::= Igual InsertTipo1 | ;
+DeclareDefinition2 ::= Igual InsertTipo1  {: 
+                                              RESULT = new SimboloTabla(); 
+                                          :}| ;
 DeclareDefinition5 ::= DeclareDefinition7 DeclareDefinition6 ;
 DeclareDefinition6 ::= Coma DeclareDefinition7 DeclareDefinition6 | ;
-DeclareDefinition7 ::= Var DeclareDefinition1 ;
+DeclareDefinition7 ::= Var DeclareDefinition1;                        
 
 //Use
 
