@@ -12,14 +12,14 @@ package AnalisiSemanticoSQL;
  */
 public class SimboloTabla {
     private String nombre; //Identificador de la variable
-    private int valor; //Valor de la variable
+    private String valor; //Valor de la variable
     private String tipo; //Tipo de variable: int, String, etc
     private String tipoDeclaracion; //Si es declarado como funcion, variable, procedimiento, tabla, etc.
     private int ambito; //Número de ambito al que pertenece, si el ambito es 0, significa que el ámbito ya se cerró y por lo tanto ya no se puede
                 //acceder a la variable
     
     SimboloTabla(){
-        valor = Integer.MAX_VALUE;
+        valor = "";
         tipo = "";
         tipoDeclaracion = "";
         ambito = 0;
@@ -38,11 +38,11 @@ public class SimboloTabla {
         this.nombre = nombre;
     }
     
-    int getValor(){
+    String getValor(){
         return valor;
     }
     
-    void setValor(int valor){
+    void setValor(String valor){
         this.valor = valor;
     }
     

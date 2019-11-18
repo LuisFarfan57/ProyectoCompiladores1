@@ -458,11 +458,9 @@ DeclareDefinition ::= DECLARE DeclareDefinition5;
 DeclareDefinition1 ::= AS TipoDeDato3 DeclareDefinition2 |
                        TipoDeDato3 DeclareDefinition2 ;
 DeclareDefinition2 ::= Igual InsertTipo1 | ;
-DeclareDefinition3 ::= Var DeclareDefinition4 ;
-DeclareDefinition4 ::= Coma Var DeclareDefinition4 | ;
 DeclareDefinition5 ::= DeclareDefinition7 DeclareDefinition6 ;
 DeclareDefinition6 ::= Coma DeclareDefinition7 DeclareDefinition6 | ;
-DeclareDefinition7 ::= DeclareDefinition3 DeclareDefinition1 ;
+DeclareDefinition7 ::= Var DeclareDefinition1 ;
 
 //Use
 
