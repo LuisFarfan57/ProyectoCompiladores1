@@ -222,6 +222,7 @@ Var ::= Arroba Identificador:e
             RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
             RESULT.setTipoDeclaracion("Variable");
             TablaSimbolos.add(RESULT);
+            TablaSimbolos.listaTemporal.add(RESULT);
           } 
           else{
             
@@ -230,7 +231,7 @@ Var ::= Arroba Identificador:e
 
 TipoDeDato ::= TipoDeDato1:e {: RESULT = e; :};
 TipoDeDato1 ::= TipoDeDato3:e {: RESULT = e; :}|
-                Acorchete TipoDeDato3 Ccorchete {: RESULT = e; :};
+                Acorchete TipoDeDato3:e Ccorchete {: RESULT = e; :};
 TipoDeDato3 ::= BIGINT  {: 
                             RESULT = "Integer";                            
                         :}|
@@ -320,35 +321,36 @@ TipoDeDato3 ::= BIGINT  {:
                           :};
 
 InsertTipo1 ::= DEFAULT {: 
-                            RESULT = new TablaSimbolo();
+                            RESULT = new SimboloTabla();
                             RESULT.setTipo("Default");
                         :}|
                 Integer:e {:
-                            RESULT = new TablaSimbolo();
+                            RESULT = new SimboloTabla();
                             RESULT.setTipo("Integer");
-                            RESULT.setValor(e.toString());
+                            RESULT.setValor(String.valueOf(e));
                         :}|
                 Float:e {:
-                            RESULT = new TablaSimbolo();
+                            RESULT = new SimboloTabla();
                             RESULT.setTipo("Float");
-                            RESULT.setValor(e.toString());
+                            RESULT.setValor(String.valueOf(e));
                         :}|
                 Varchar:e {:
-                              RESULT = new TablaSimbolo();
+                              RESULT = new SimboloTabla();
                               RESULT.setTipo("String");
                               RESULT.setValor(e.toString());
                           :}|
                 Bit:e {:
-                            RESULT = new TablaSimbolo();
+                            RESULT = new SimboloTabla();
                             RESULT.setTipo("Bit");
                             RESULT.setValor(e.toString());
                       :}|
                 Var:e {:
-                            RESULT = new TablaSimbolo();
+                            //Hace falta buscar el valor de e en la tabla de simbolos
+                            RESULT = new SimboloTabla();
                             RESULT = e;
                       :}|
                 NULL {:
-                          RESULT = new TablaSimbolo();
+                          RESULT = new SimboloTabla();
                           RESULT.setTipo("Null");
                      :};
 
@@ -394,7 +396,7 @@ Operacion5 ::= IDL5 |
                Varchar |
                Bit |
                Var |
-               NULL |               
+               NULL;              
 Operaciones ::= Coma Operacion Operaciones | ;
 Not ::= NOT | ;
 
@@ -530,15 +532,83 @@ ConstraintTabla5 ::= Coma ID OrderBy2 ConstraintTabla5 | ;
 
 IndexTabla ::= INDEX ID ConstraintColumna3 ConstraintTabla2 ;
 
-DeclareDefinition ::= DECLARE DeclareDefinition5;                      
-DeclareDefinition1 ::= AS TipoDeDato3 DeclareDefinition2 |
-                       TipoDeDato3 DeclareDefinition2 ;
-DeclareDefinition2 ::= Igual InsertTipo1  {: 
+DeclareDefinition ::= DECLARE DeclareDefinition3;                      
+DeclareDefinition1 ::= AS TipoDeDato3:tipo DeclareDefinition2:valor {: 
+                                                                        RESULT = new SimboloTabla();
+
+                                                                        if(valor != null){
+                                                                            if(valor.getTipo().equals("Default") || valor.getTipo().equals("Null")){
+                                                                                switch(tipo){
+                                                                                  case "String":
+                                                                                    RESULT.setValor("");
+                                                                                    break;
+                                                                                  case "Integer":
+                                                                                    RESULT.setValor("0");
+                                                                                    break;
+                                                                                  case "Bit":
+                                                                                    RESULT.setValor("False");
+                                                                                    break;
+                                                                                  case "Float":
+                                                                                    RESULT.setValor("0.0");
+                                                                                    break;
+                                                                                }
+                                                                            }else if(tipo.equals(valor.getTipo())){
+                                                                                RESULT.setValor(valor.getValor());
+                                                                                RESULT.setTipo(valor.getTipo());
+                                                                            }
+                                                                            else{
+                                                                                RESULT.setError(true);
+                                                                              //Error
+                                                                            }
+                                                                        } 
+                                                                    :}|
+                       TipoDeDato3:tipo DeclareDefinition2:valor {: 
+                                                                        RESULT = new SimboloTabla();
+
+                                                                        if(valor != null){
+                                                                            if(valor.getTipo().equals("Default") || valor.getTipo().equals("Null")){
+                                                                                switch(tipo){
+                                                                                  case "String":
+                                                                                    RESULT.setValor("");
+                                                                                    break;
+                                                                                  case "Integer":
+                                                                                    RESULT.setValor("0");
+                                                                                    break;
+                                                                                  case "Bit":
+                                                                                    RESULT.setValor("False");
+                                                                                    break;
+                                                                                  case "Float":
+                                                                                    RESULT.setValor("0.0");
+                                                                                    break;
+                                                                                }
+                                                                            }else if(tipo.equals(valor.getTipo())){
+                                                                                RESULT.setValor(valor.getValor());
+                                                                                RESULT.setTipo(valor.getTipo());
+                                                                            }
+                                                                            else{
+                                                                              //Error
+                                                                            }
+                                                                        } 
+                                                                    :} ;
+DeclareDefinition2 ::= Igual InsertTipo1:e  {: 
                                               RESULT = new SimboloTabla(); 
-                                          :}| ;
-DeclareDefinition5 ::= DeclareDefinition7 DeclareDefinition6 ;
-DeclareDefinition6 ::= Coma DeclareDefinition7 DeclareDefinition6 | ;
-DeclareDefinition7 ::= Var DeclareDefinition1;                        
+                                              RESULT = e;
+                                            :}| {:
+                                                  RESULT = new SimboloTabla();
+                                                  RESULT = null;
+                                                :};
+DeclareDefinition3 ::= DeclareDefinition5 DeclareDefinition1:valor  {:
+                                                                  if(!valor.getError()){
+                                                                      for (int i = 0; i<TablaSimbolos.listaTemporal.size(); i++) {
+                                                                          TablaSimbolos.listaTemporal.get(i).setValor(valor.getValor());
+                                                                          TablaSimbolos.listaTemporal.get(i).setTipo(valor.getTipo());
+                                                                      }
+
+                                                                      TablaSimbolos.listaTemporal.clear();
+                                                                  }                                                                                                                                
+                                                              :};
+DeclareDefinition5 ::= Var DeclareDefinition6;
+DeclareDefinition6 ::= Coma Var DeclareDefinition6 | ;
 
 //Use
 

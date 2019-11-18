@@ -15,6 +15,7 @@ public class TablaSimbolos {
     private static ArrayList<SimboloTabla> tablaSimbolos = new ArrayList<SimboloTabla>(); 
     private static int ambitoActual;   
     private static String nombreAmbito;
+    public static ArrayList<SimboloTabla> listaTemporal = new ArrayList<>();
     
     public static ArrayList<SimboloTabla> getTablaSimbolos(){
         return tablaSimbolos;
@@ -57,6 +58,25 @@ public class TablaSimbolos {
         }
         
         return false;
+    }
+    
+    public static void actualizarTipoValorSimbolo(String nombre, int ambito, String tipo, String valor){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(nombre) && tablaSimbolos.get(i).getAmbito() == ambito){
+                tablaSimbolos.get(i).setTipo(tipo);
+                tablaSimbolos.get(i).setValor(valor);
+                break;
+            }
+        }
+    }
+    
+    public static void actualizarValorSimbolo(String nombre, int ambito, String valor){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(nombre) && tablaSimbolos.get(i).getAmbito() == ambito){                
+                tablaSimbolos.get(i).setValor(valor);
+                break;
+            }            
+        }
     }
     
 }
