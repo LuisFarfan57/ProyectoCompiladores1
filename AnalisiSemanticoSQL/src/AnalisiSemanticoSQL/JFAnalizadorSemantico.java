@@ -284,8 +284,17 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
                         txtResultado.setText(s.obtenerErrores());
                     }
                     else{
-                        txtResultado.setText("Analisis Exitoso :)");
+                        txtResultado.setText("Analisis sintáctico exitoso \n");                        
                     }
+                    
+                    txtResultado.append("\n");
+                    
+                    if(TablaSimbolos.getErrores() == ""){
+                        txtResultado.append("Análisis semántico exitoso \n");
+                    }
+                    else{
+                        txtResultado.append(TablaSimbolos.getErrores());
+                    }                    
                 } catch (Exception ex) {
                     Logger.getLogger(JFAnalizadorSemantico.class.getName()).log(Level.SEVERE, null, ex);
                 }

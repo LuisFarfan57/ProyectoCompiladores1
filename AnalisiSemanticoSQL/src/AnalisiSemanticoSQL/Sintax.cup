@@ -146,8 +146,8 @@ Ccorchete, Aparentesis, Cparentesis, Allave, Cllave, Dcorchete, Dparentesis, Dll
 Hashtag, Dhashtag, Menor, MenorIgual, Mayor, MayorIgual, Digual, Diferente, Dampersand, Dbarra,
 Exclamacion, Igual, Varchar, VarcharError, ERROR, Identificador, IdentificadorError, Bit; 
 
-terminal float Float; 
-terminal int Integer;
+terminal Float; 
+terminal Integer;
 
 non terminal SimboloTabla Inicio1, Inicio2, SentenciasDML, SentenciasDDL, SentenciasTCL, SentenciasTSQL, 
 Fin, ID, IDL1, IDL2, IDL3, IDL4, IDL5, IDL6, IFExists, Var, Drop, DropOptions, DropTable, DropTable1, DropView, DropView1, DropUser, 
@@ -216,17 +216,23 @@ Number ::= Integer | Bit;
 
 Var ::= Arroba Identificador:e 
         {:
-          if(!TablaSimbolos.buscarIdentificador(e.toString(), "Variable")){
-            RESULT = new SimboloTabla(); 
-            RESULT.setNombre(e.toString());
-            RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
-            RESULT.setTipoDeclaracion("Variable");
-            TablaSimbolos.add(RESULT);
-            TablaSimbolos.listaTemporal.add(RESULT);
-          } 
-          else{
-            
-          }          
+          
+            if(!TablaSimbolos.buscarIdentificador(e.toString(), "Variable")){
+              RESULT = new SimboloTabla(); 
+              RESULT.setNombre(e.toString());
+              RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+              RESULT.setTipoDeclaracion("Variable");
+              RESULT.yaExiste = false;
+              TablaSimbolos.add(RESULT);
+              TablaSimbolos.listaTemporal.add(RESULT);
+            } 
+            else{
+              RESULT = new SimboloTabla();
+              RESULT.setTipo(TablaSimbolos.obtenerTipoVariable(e.toString(), "Variable"));
+              RESULT.setValor(TablaSimbolos.obtenerValorVariable(e.toString(), "Variable"));
+              RESULT.setNombre(e.toString());
+              RESULT.yaExiste = true;              
+            }                              
         :};
 
 TipoDeDato ::= TipoDeDato1:e {: RESULT = e; :};
@@ -345,9 +351,9 @@ InsertTipo1 ::= DEFAULT {:
                             RESULT.setValor(e.toString());
                       :}|
                 Var:e {:
-                            //Hace falta buscar el valor de e en la tabla de simbolos
-                            RESULT = new SimboloTabla();
-                            RESULT = e;
+                        if(!e.yaExiste){
+                          TablaSimbolos.ERROR("La variable " + e.getNombre() + " no existe en el ámbito actual");
+                        }
                       :}|
                 NULL {:
                           RESULT = new SimboloTabla();
@@ -382,6 +388,7 @@ AsElement ::= AS AsElement1 |
               AsElement1 | ;
 AsElement1 ::= ID |
                Varchar ;
+
 Operacion ::= Operacion1 Operacion2 ;
 Operacion2 ::= Suma Operacion1 Operacion2 |
                Resta Operacion1 Operacion2 | ;
@@ -395,9 +402,10 @@ Operacion5 ::= IDL5 |
                Float |
                Varchar |
                Bit |
-               Var |
+               Var|
                NULL;              
 Operaciones ::= Coma Operacion Operaciones | ;
+
 Not ::= NOT | ;
 
 
@@ -533,62 +541,65 @@ ConstraintTabla5 ::= Coma ID OrderBy2 ConstraintTabla5 | ;
 IndexTabla ::= INDEX ID ConstraintColumna3 ConstraintTabla2 ;
 
 DeclareDefinition ::= DECLARE DeclareDefinition3;                      
-DeclareDefinition1 ::= AS TipoDeDato3:tipo DeclareDefinition2:valor {: 
+DeclareDefinition1 ::= AS TipoDeDato3:tipo DeclareDefinition2:valor {:
+                                                                      if(!TablaSimbolos.getError()){
                                                                         RESULT = new SimboloTabla();
-
+                                                                        RESULT.setTipo(tipo);
                                                                         if(valor != null){
-                                                                            if(valor.getTipo().equals("Default") || valor.getTipo().equals("Null")){
-                                                                                switch(tipo){
-                                                                                  case "String":
-                                                                                    RESULT.setValor("");
-                                                                                    break;
-                                                                                  case "Integer":
-                                                                                    RESULT.setValor("0");
-                                                                                    break;
-                                                                                  case "Bit":
-                                                                                    RESULT.setValor("False");
-                                                                                    break;
-                                                                                  case "Float":
-                                                                                    RESULT.setValor("0.0");
-                                                                                    break;
-                                                                                }
-                                                                            }else if(tipo.equals(valor.getTipo())){
-                                                                                RESULT.setValor(valor.getValor());
-                                                                                RESULT.setTipo(valor.getTipo());
-                                                                            }
-                                                                            else{
-                                                                                RESULT.setError(true);
-                                                                              //Error
-                                                                            }
+                                                                          if(valor.getTipo().equals("Default") || valor.getTipo().equals("Null")){
+                                                                              switch(tipo){
+                                                                                case "String":
+                                                                                  RESULT.setValor("");
+                                                                                  break;
+                                                                                case "Integer":
+                                                                                  RESULT.setValor("0");
+                                                                                  break;
+                                                                                case "Bit":
+                                                                                  RESULT.setValor("False");
+                                                                                  break;
+                                                                                case "Float":
+                                                                                  RESULT.setValor("0.0");
+                                                                                  break;
+                                                                              }
+                                                                          }else if(tipo.equals(valor.getTipo())){
+                                                                            RESULT.setValor(valor.getValor());                                                                                
+                                                                          }
+                                                                          else{
+                                                                            TablaSimbolos.ERROR(tipo + " no es compatible con " + valor.getTipo());
+                                                                            //Error
+                                                                          }
                                                                         } 
+                                                                      }
                                                                     :}|
                        TipoDeDato3:tipo DeclareDefinition2:valor {: 
+                                                                        if(!TablaSimbolos.getError()){
                                                                         RESULT = new SimboloTabla();
-
+                                                                        RESULT.setTipo(tipo);
                                                                         if(valor != null){
-                                                                            if(valor.getTipo().equals("Default") || valor.getTipo().equals("Null")){
-                                                                                switch(tipo){
-                                                                                  case "String":
-                                                                                    RESULT.setValor("");
-                                                                                    break;
-                                                                                  case "Integer":
-                                                                                    RESULT.setValor("0");
-                                                                                    break;
-                                                                                  case "Bit":
-                                                                                    RESULT.setValor("False");
-                                                                                    break;
-                                                                                  case "Float":
-                                                                                    RESULT.setValor("0.0");
-                                                                                    break;
-                                                                                }
-                                                                            }else if(tipo.equals(valor.getTipo())){
-                                                                                RESULT.setValor(valor.getValor());
-                                                                                RESULT.setTipo(valor.getTipo());
-                                                                            }
-                                                                            else{
-                                                                              //Error
-                                                                            }
+                                                                          if(valor.getTipo().equals("Default") || valor.getTipo().equals("Null")){
+                                                                              switch(tipo){
+                                                                                case "String":
+                                                                                  RESULT.setValor("");
+                                                                                  break;
+                                                                                case "Integer":
+                                                                                  RESULT.setValor("0");
+                                                                                  break;
+                                                                                case "Bit":
+                                                                                  RESULT.setValor("False");
+                                                                                  break;
+                                                                                case "Float":
+                                                                                  RESULT.setValor("0.0");
+                                                                                  break;
+                                                                              }
+                                                                          }else if(tipo.equals(valor.getTipo())){
+                                                                            RESULT.setValor(valor.getValor());                                                                                
+                                                                          }
+                                                                          else{
+                                                                            TablaSimbolos.ERROR(tipo + " no es compatible con " + valor.getTipo());
+                                                                            //Error
+                                                                          }
                                                                         } 
+                                                                      }
                                                                     :} ;
 DeclareDefinition2 ::= Igual InsertTipo1:e  {: 
                                               RESULT = new SimboloTabla(); 
@@ -598,17 +609,25 @@ DeclareDefinition2 ::= Igual InsertTipo1:e  {:
                                                   RESULT = null;
                                                 :};
 DeclareDefinition3 ::= DeclareDefinition5 DeclareDefinition1:valor  {:
-                                                                  if(!valor.getError()){
+                                                                  if(!TablaSimbolos.getError()){
                                                                       for (int i = 0; i<TablaSimbolos.listaTemporal.size(); i++) {
-                                                                          TablaSimbolos.listaTemporal.get(i).setValor(valor.getValor());
-                                                                          TablaSimbolos.listaTemporal.get(i).setTipo(valor.getTipo());
+                                                                          TablaSimbolos.actualizarTipoValorSimbolo(TablaSimbolos.listaTemporal.get(i).getNombre(), 
+                                                                            TablaSimbolos.listaTemporal.get(i).getAmbito(), valor.getTipo(), valor.getValor());
                                                                       }
 
                                                                       TablaSimbolos.listaTemporal.clear();
                                                                   }                                                                                                                                
                                                               :};
-DeclareDefinition5 ::= Var DeclareDefinition6;
-DeclareDefinition6 ::= Coma Var DeclareDefinition6 | ;
+DeclareDefinition5 ::= Var:e DeclareDefinition6 {:
+                                                  if(e.yaExiste){
+                                                    TablaSimbolos.ERROR("La variable " + e.getNombre() + " ya existe en el ámbito actual");
+                                                  }
+                                              :};
+DeclareDefinition6 ::= Coma Var:e DeclareDefinition6  {:
+                                                      if(e.yaExiste){
+                                                        TablaSimbolos.ERROR("La variable " + e.getNombre() + " ya existe en el ámbito actual");
+                                                      }
+                                                    :}| ;
 
 //Use
 

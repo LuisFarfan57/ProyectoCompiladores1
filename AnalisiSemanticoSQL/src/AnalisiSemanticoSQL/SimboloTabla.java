@@ -16,16 +16,15 @@ public class SimboloTabla {
     private String tipo; //Tipo de variable: int, String, etc
     private String tipoDeclaracion; //Si es declarado como funcion, variable, procedimiento, tabla, etc.
     private int ambito; //Número de ambito al que pertenece, si el ambito es 0, significa que el ámbito ya se cerró y por lo tanto ya no se puede
-                //acceder a la variable
-    boolean error;
+                //acceder a la variable    
+    public boolean yaExiste;
     
     SimboloTabla(){        
         valor = "";        
         tipo = "";
         tipoDeclaracion = "";
         ambito = 0;
-        nombre = "";
-        error = false;
+        nombre = "";        
     }
     
     public SimboloTabla getSimbolo(){
@@ -70,13 +69,5 @@ public class SimboloTabla {
     
     void setAmbito(int ambito){
         this.ambito = ambito;
-    }
-    
-    boolean getError(){
-        return error;
-    }
-    
-    void setError(boolean error){
-        this.error = error;
-    }
+    }        
 }

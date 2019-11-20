@@ -16,6 +16,52 @@ public class TablaSimbolos {
     private static int ambitoActual;   
     private static String nombreAmbito;
     public static ArrayList<SimboloTabla> listaTemporal = new ArrayList<>();
+    private static boolean error;
+    private static String errores = "";
+    private static boolean soloLectura;
+    
+    public static void setSoloLectura(boolean lectura){
+        soloLectura = lectura;
+    }
+    
+    public static boolean getSoloLectura(){
+        return soloLectura;
+    }
+    
+    public static String obtenerValorVariable(String identificador, String tipoDeclaracion){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(identificador) && tablaSimbolos.get(i).getAmbito() == ambitoActual && tablaSimbolos.get(i).getTipoDeclaracion().equals(tipoDeclaracion))
+                return tablaSimbolos.get(i).getValor();
+        }
+
+        return "";
+    }
+    
+    public static String obtenerTipoVariable(String identificador, String tipoDeclaracion){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(identificador) && tablaSimbolos.get(i).getAmbito() == ambitoActual && tablaSimbolos.get(i).getTipoDeclaracion().equals(tipoDeclaracion))
+                return tablaSimbolos.get(i).getTipo();
+        }
+
+        return "";
+    }
+    
+    public static void ERROR(String descripcion){
+        setError(true);
+        errores += descripcion + "\n";
+    }
+    
+    public static String getErrores(){
+        return errores;
+    }
+    
+    public static boolean getError(){
+        return error;
+    }
+    
+    public static void setError(boolean error2){
+        error = error2;
+    }
     
     public static ArrayList<SimboloTabla> getTablaSimbolos(){
         return tablaSimbolos;
@@ -68,15 +114,5 @@ public class TablaSimbolos {
                 break;
             }
         }
-    }
-    
-    public static void actualizarValorSimbolo(String nombre, int ambito, String valor){
-        for (int i = 0; i < tablaSimbolos.size(); i++) {
-            if(tablaSimbolos.get(i).getNombre().equals(nombre) && tablaSimbolos.get(i).getAmbito() == ambito){                
-                tablaSimbolos.get(i).setValor(valor);
-                break;
-            }            
-        }
-    }
-    
+    }            
 }
