@@ -180,7 +180,7 @@ FunctionParam3, AsWord, ReadOnlyWord, ReturnType, ReturnTable, ReturnTable1, Ret
 SelectOption, ReturnData, ReturnData1, Cursor, Cursor1, Cursor2, Cursor3, Cursor4, Cursor5, Cursor6, Cursor7;
 
 non terminal SimboloTabla DeclareDefinition, DeclareDefinition1, DeclareDefinition2, DeclareDefinition3, DeclareDefinition4
-              , DeclareDefinition5, DeclareDefinition6, DeclareDefinition7, Use;
+              , DeclareDefinition5, DeclareDefinition6, DeclareDefinition7, Use, SetDefinition, SetDefinition1;
 
 non terminal String TipoDeDato, TipoDeDato1, TipoDeDato2, TipoDeDato3, TipoDeDato4;
 
@@ -628,6 +628,9 @@ DeclareDefinition6 ::= Coma Var:e DeclareDefinition6  {:
                                                         TablaSimbolos.ERROR("La variable " + e.getNombre() + " ya existe en el ámbito actual");
                                                       }
                                                     :}| ;
+
+SetDefinition ::= SET Var Igual SetDefinition1;
+SetDefinition1 ::= Operacion | TRUE | FALSE;
 
 //Use
 
