@@ -654,5 +654,22 @@ Use ::= USE Identificador:e
             TablaSimbolos.add(RESULT);
         :};
 
+Transact ::= BEGIN TransactName Transact1 ;
+Transact1 ::= Name Transact2 | ;
+Transact2 ::= WITH MARK Transact3 | ;
+Transact3 ::= Varchar | ;
+TransactName ::= TRAN | 
+                 TRANSACTION ;
+Name ::= ID | 
+         Var ;
+Name1 ::= ID | 
+          Var | ;
+Rollback ::= ROLLBACK TransactName Rollback1 ;
+Rollback1 ::= Name | ;
+Commit ::= COMMIT Commit1 ;
+Commit1 ::= TransactName Name1 | ;
+Save ::= SAVE TransactName Name ;
+OrAlter ::= OR ALTER | ;
+
 
 
