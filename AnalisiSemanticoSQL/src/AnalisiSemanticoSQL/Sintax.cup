@@ -144,7 +144,7 @@ BINARY, IMAGE, VARBINARY, FILENAME, NAME, NAMES, SIZE, MAXSIZE, FILEGROWTH, UNLI
 LOCAL, GLOBAL, SCROLL, SCROLLLOCKS, Suma, Resta, Mul, Div, Porce, PuntoYComa, Coma, Punto, Acorchete,
 Ccorchete, Aparentesis, Cparentesis, Allave, Cllave, Dcorchete, Dparentesis, Dllaves, Arroba,
 Hashtag, Dhashtag, Menor, MenorIgual, Mayor, MayorIgual, Digual, Diferente, Dampersand, Dbarra,
-Exclamacion, Igual, Varchar, VarcharError, ERROR, Identificador, IdentificadorError, Bit; 
+Exclamacion, Igual, Varchar, VarcharError, ERROR, Identificador, IdentificadorError, Bit, TRUE, FALSE; 
 
 terminal Float; 
 terminal Integer;
@@ -204,12 +204,38 @@ Fin ::= PuntoYComa|
         GO ;
 ID ::= Acorchete Identificador Ccorchete|
        Identificador ;
-IDL1 ::= ID IDL2 ;
-IDL2 ::= Punto ID| ;
-IDL3 ::= ID IDL4 ;
+IDL1 ::= ID:e IDL2  {:
+                      if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
+                        TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
+                      }
+                      else{
+                        RESULT = new SimboloTabla();
+                        RESULT.setNombre(e.getNombre());
+                        RESULT.setTipoDeclaracion("Tabla");
+                      }
+                    :};
+IDL2 ::= Punto ID:e {:
+                      if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Columna")){
+                        TablaSimbolos.ERROR("No existe la columna " + e.getNombre() + " en el ámbito actual");
+                      }
+                      else{
+                        RESULT = new SimboloTabla();
+                        RESULT.setNombre(e.getNombre());
+                        RESULT.setTipoDeclaracion("Columna");
+                      }
+                    :}| ;
+IDL3 ::= ID:e IDL4 {:
+                        if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Base de datos")){
+                          TablaSimbolos.ERROR("No existe la base de datos " + e.getNombre() + " en el ámbito actual");
+                        }
+                        else{
+                          RESULT = new SimboloTabla();
+                          RESULT.setNombre(e.getNombre());
+                          RESULT.setTipoDeclaracion("Base de datos");
+                        }                            
+                    :};
 IDL4 ::= Punto IDL1| ;
-IDL5 ::= ID IDL6 ;
-IDL6 ::= Punto IDL3| ;
+
 IFExists ::= IF EXISTS ;
 
 Number ::= Integer | Bit;
@@ -397,7 +423,7 @@ Operacion4 ::= Mul Operacion3 Operacion4 |
                Div Operacion3 Operacion4 | ;
 Operacion3 ::= Aparentesis Operacion Cparentesis |
                Operacion5 ;
-Operacion5 ::= IDL5 |
+Operacion5 ::= IDL3 |
                Integer |
                Float |
                Varchar |
@@ -636,10 +662,33 @@ SetDefinition ::= SET Var:e Igual SetDefinition1:valor{:
                                                       }
                                                       else{
                                                         e.setValor(valor.getValor());
+                                                        if(valor.getTipo().equals(valor.getTipo())){
+                                                          e.setValor(valor.getValor());
+                                                        }
                                                       }
                                                     }
                                                 :};
-SetDefinition1 ::= Operacion | TRUE | FALSE;
+SetDefinition1 ::= Operacion:e {:
+                                if(!TablaSimbolos.getError()){
+                                  RESULT = new SimboloTabla();
+                                  RESULT.setValor(e.getValor());
+                                  RESULT.setTipo(e.getTipo());
+                                }
+                              :}| 
+                    TRUE  {:
+                            if(!TablaSimbolos.getError()){
+                              RESULT = new SimboloTabla();
+                              RESULT.setValor("True");
+                              RESULT.setTipo("Boolean");
+                            }
+                          :}| 
+                    FALSE {:
+                            if(!TablaSimbolos.getError()){
+                              RESULT = new SimboloTabla();
+                              RESULT.setValor("False");
+                              RESULT.setTipo("Boolean");
+                            }
+                          :};
 
 //Use
 
@@ -648,7 +697,7 @@ Use ::= USE Identificador:e
             TablaSimbolos.cerrarAmbitoActual();
             RESULT = new SimboloTabla(); 
             RESULT.setNombre(e.toString());           
-            RESULT.setTipoDeclaracion("Ambito");
+            RESULT.setTipoDeclaracion("Base de datos");
             TablaSimbolos.nuevoAmbito(e.toString());
             RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
             TablaSimbolos.add(RESULT);
