@@ -19,6 +19,9 @@ public class SimboloTabla {
                 //acceder a la variable    
     public boolean yaExiste;
     
+    public boolean multiplicacion;
+    public boolean suma;
+    
     SimboloTabla(){        
         valor = "";        
         tipo = "";

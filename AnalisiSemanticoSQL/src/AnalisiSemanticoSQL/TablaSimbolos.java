@@ -47,7 +47,7 @@ public class TablaSimbolos {
         return errores;
     }
     
-    public static boolean getError(){
+    public static boolean getError(){        
         return error;
     }
     
@@ -92,6 +92,15 @@ public class TablaSimbolos {
     public static Boolean buscarIdentificador(String identificador, String tipoDeclaracion){
         for (int i = 0; i < tablaSimbolos.size(); i++) {
             if(tablaSimbolos.get(i).getNombre().equals(identificador) && tablaSimbolos.get(i).getAmbito() == ambitoActual && tablaSimbolos.get(i).getTipoDeclaracion().equals(tipoDeclaracion))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    public static Boolean buscarIdentificadorGeneral(String identificador, String tipoDeclaracion){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(identificador) && tablaSimbolos.get(i).getAmbito() != 0 && tablaSimbolos.get(i).getTipoDeclaracion().equals(tipoDeclaracion))
                 return true;
         }
         

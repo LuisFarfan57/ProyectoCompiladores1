@@ -189,9 +189,9 @@ precedence left AND, OR, Aparentesis, PuntoYComa, Arroba, Identificador, Acorche
 
 start with Inicio1;
 
-Inicio1 ::= Inicio2 Fin Inicio1 |
+Inicio1 ::= Inicio2 Fin Inicio1|
             error Fin Inicio1 | ;
-Inicio2 ::= SentenciasDDL|
+Inicio2 ::= SentenciasDDL |
             SentenciasTCL|
             Function | DeclareDefinition | SetDefinition | Use ;
 SentenciasDDL ::= Create|
@@ -200,86 +200,105 @@ SentenciasTCL ::= Transact|
                   Rollback|
                   Commit|
                   Save ;
-Fin ::= PuntoYComa|
-        GO ;
+
+Fin ::= PuntoYComa {: TablaSimbolos.setError(false); :}|
+        GO {: TablaSimbolos.setError(false); :};
+
 ID ::= Acorchete Identificador:e Ccorchete {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:}|
        Identificador:e {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:};
 IDL1 ::= ID:e IDL2:e1   {:
-                          if(e1 != null){
-                            if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
-                              TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
+                          if(!TablaSimbolos.getError()){
+                            if(e1 != null){
+                              if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Tabla")){
+                                TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
+                              }
+                              else{
+                                RESULT = new SimboloTabla();
+                                RESULT.setNombre(e.getNombre() + "." + e1.getNombre());
+                                RESULT.setTipoDeclaracion("TablaColumna");                              
+                              }
                             }
                             else{
-                              RESULT = new SimboloTabla();
-                              RESULT.setNombre(e.getNombre() + "." + e1.getNombre());
-                              RESULT.setTipoDeclaracion("TablaColumna");                              
-                            }
-                          }
-                          else{
-                            RESULT = new SimboloTabla();
-                            RESULT.setNombre(e.getNombre());
-                            RESULT.setTipoDeclaracion("Columna");                            
+                              if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Columna")){
+                                TablaSimbolos.ERROR("No existe la columna " + e.getNombre() + " en el ámbito actual");
+                              }
+                              else{
+                                RESULT = new SimboloTabla();
+                                RESULT.setNombre(e.getNombre());
+                                RESULT.setTipoDeclaracion("Columna");                            
+                              }                            
+                            }                          
                           }                          
                         :};
 IDL2 ::= Punto ID:e {:
-                      if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Columna")){
-                        TablaSimbolos.ERROR("No existe la columna " + e.getNombre() + " en el ámbito actual");
-                      }
-                      else{
-                        RESULT = new SimboloTabla();
-                        RESULT.setNombre(e.getNombre());
-                        RESULT.setTipoDeclaracion("Columna");                        
-                      }
-                    :}|
-                      {:
-                        RESULT = new SimboloTabla();
-                        RESULT = null;                        
-                      :};
-IDL3 ::= ID:e IDL4:e1 {:
-                        if(e1 != null){
-                          if(e1.getTipoDeclaracion().equals("TablaColumna")){
-                            if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Base de datos")){
-                              TablaSimbolos.ERROR("No existe la base de datos " + e.getNombre() + " en el ámbito actual");
-                            }
-                            else{
-                              RESULT = new SimboloTabla();
-                              RESULT.setNombre(e.getNombre() + e1.getNombre());
-                              RESULT.setTipoDeclaracion("Base de datosTablaColumna");
-                              TablaSimbolos.add(RESULT);
-                            }                            
-                          }
-                          else{
-                            if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
-                              TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
-                            }
-                            else{
-                              RESULT = new SimboloTabla();
-                              RESULT.setNombre(e.getNombre() + e1.getNombre());
-                              RESULT.setTipoDeclaracion("TablaColumna");
-                              TablaSimbolos.add(RESULT);
-                            }                            
-                          }                          
+                      if(!TablaSimbolos.getError()){
+                        if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Columna")){
+                          TablaSimbolos.ERROR("No existe la columna " + e.getNombre() + " en el ámbito actual");
                         }
                         else{
-                          if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Columna")){
-                            TablaSimbolos.ERROR("No existe la base de columna " + e.getNombre() + " en el ámbito actual");
+                          RESULT = new SimboloTabla();
+                          RESULT.setNombre(e.getNombre());
+                          RESULT.setTipoDeclaracion("Columna");                        
+                        }
+                      }                      
+                    :}|
+                      {:
+                        if(TablaSimbolos.getError()){
+                          RESULT = new SimboloTabla();
+                          RESULT = null;                        
+                        }                        
+                      :};
+IDL3 ::= ID:e IDL4:e1 {:
+                        if(!TablaSimbolos.getError()){
+                          if(e1 != null){
+                            if(e1.getTipoDeclaracion().equals("TablaColumna")){
+                              if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Base de datos")){
+                                TablaSimbolos.ERROR("No existe la base de datos " + e.getNombre() + " en el ámbito actual");
+                              }
+                              else{
+                                RESULT = new SimboloTabla();
+                                RESULT.setNombre(e.getNombre() + e1.getNombre());
+                                RESULT.setTipoDeclaracion("Base de datosTablaColumna");
+                                TablaSimbolos.add(RESULT);
+                              }                            
+                            }
+                            else{
+                              if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Tabla")){
+                                TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
+                              }
+                              else{
+                                RESULT = new SimboloTabla();
+                                RESULT.setNombre(e.getNombre() + e1.getNombre());
+                                RESULT.setTipoDeclaracion("TablaColumna");
+                                TablaSimbolos.add(RESULT);
+                              }                            
+                            }                          
                           }
                           else{
-                            RESULT = new SimboloTabla();
-                            RESULT.setNombre(e.getNombre());
-                            RESULT.setTipoDeclaracion("Columna");
-                            TablaSimbolos.add(RESULT);
-                          }                            
+                            if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Columna")){
+                              TablaSimbolos.ERROR("No existe la base de columna " + e.getNombre() + " en el ámbito actual");
+                            }
+                            else{
+                              RESULT = new SimboloTabla();
+                              RESULT.setNombre(e.getNombre());
+                              RESULT.setTipoDeclaracion("Columna");
+                              TablaSimbolos.add(RESULT);
+                            }                            
+                          }                        
                         }                        
                     :};
 IDL4 ::= Punto IDL1:e {:
-                      RESULT = new SimboloTabla();
-                      RESULT.setNombre(e.getNombre());
-                      RESULT.setTipoDeclaracion(e.getTipoDeclaracion());
+                      if(!TablaSimbolos.getError()){
+                        RESULT = new SimboloTabla();
+                        RESULT.setNombre(e.getNombre());
+                        RESULT.setTipoDeclaracion(e.getTipoDeclaracion());
+                      }                      
                     :}|
                       {:
-                        RESULT = new SimboloTabla();
-                        RESULT = null;
+                        if(!TablaSimbolos.getError()){
+                          RESULT = new SimboloTabla();
+                          RESULT = null;
+                        }                        
                       :};
 
 IFExists ::= IF EXISTS ;
@@ -426,6 +445,12 @@ InsertTipo1 ::= DEFAULT {:
                         if(!e.yaExiste){
                           TablaSimbolos.ERROR("La variable " + e.getNombre() + " no existe en el ámbito actual");
                         }
+                        else{
+                          RESULT = new SimboloTabla();
+                          RESULT.setNombre(e.getNombre());
+                          RESULT.setValor(e.getValor());
+                          RESULT.setTipo(e.getTipo());
+                        }
                       :}|
                 NULL {:
                           RESULT = new SimboloTabla();
@@ -461,21 +486,150 @@ AsElement ::= AS AsElement1 |
 AsElement1 ::= ID |
                Varchar ;
 
-Operacion ::= Operacion1 Operacion2 ;
-Operacion2 ::= Suma Operacion1 Operacion2 |
-               Resta Operacion1 Operacion2 | ;
-Operacion1 ::= Operacion3 Operacion4 ;
-Operacion4 ::= Mul Operacion3 Operacion4 |
-               Div Operacion3 Operacion4 | ;
-Operacion3 ::= Aparentesis Operacion Cparentesis |
-               Operacion5 ;
-Operacion5 ::= IDL3 |
-               Integer |
-               Float |
-               Varchar |
-               Bit |
-               Var|
-               NULL;              
+Operacion ::= Operacion1:e Operacion2:e1 ;
+Operacion2 ::= Suma Operacion1:e Operacion2:e1 {:
+                                                if(e1 != null){
+                                                  if(!TablaSimbolos.getError()){
+                                                    RESULT = new SimboloTabla();
+                                                    RESULT.setTipo(e.getTipo());
+                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                      TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
+                                                    }
+                                                    else{
+                                                      if(e1.multiplicacion){
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      else{
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      RESULT.multiplicacion = true;
+                                                    }                                                  
+                                                  }                                                
+                                                }                                                
+                                              :}|
+               Resta Operacion1:e Operacion2:e1 {:
+                                                if(e1 != null){
+                                                  if(!TablaSimbolos.getError()){
+                                                    RESULT = new SimboloTabla();
+                                                    RESULT.setTipo(e.getTipo());
+                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                      TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
+                                                    }
+                                                    else{
+                                                      if(e1.multiplicacion){
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      else{
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      RESULT.multiplicacion = true;
+                                                    }                                                  
+                                                  }                                                
+                                                }                                                
+                                              :}| ;
+Operacion1 ::= Operacion3:e Operacion4:e1 {:
+                                            if(!TablaSimbolos.getError()){
+                                              RESULT = new SimboloTabla();
+                                              RESULT.setTipo(e.getTipo());
+                                              if(e1 != null){
+                                                if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                      TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
+                                                }
+                                                else{
+                                                  if(e1.multiplicacion){
+                                                    RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                  }
+                                                  else{
+                                                    RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                  }
+                                                }
+                                              }
+                                              else{
+                                                RESULT.setValor(e.getValor());
+                                              }
+                                            }           
+                                          :};
+Operacion4 ::= Mul Operacion3:e Operacion4:e1  {:
+                                                if(e1 != null){
+                                                  if(!TablaSimbolos.getError()){
+                                                    RESULT = new SimboloTabla();
+                                                    RESULT.setTipo(e.getTipo());
+                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                      TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
+                                                    }
+                                                    else{
+                                                      if(e1.multiplicacion){
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      else{
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      RESULT.multiplicacion = true;
+                                                    }                                                  
+                                                  }                                                
+                                                }                                                
+                                              :}|
+               Div Operacion3:e Operacion4:e1 {:
+                                                if(e1 != null){
+                                                  if(!TablaSimbolos.getError()){
+                                                    RESULT = new SimboloTabla();
+                                                    RESULT.setTipo(e.getTipo());
+                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                      TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
+                                                    }
+                                                    else{
+                                                      if(e1.multiplicacion){
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      else{
+                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                      }
+                                                      RESULT.multiplicacion = false;
+                                                    }                                                  
+                                                  }                                                
+                                                }                                                
+                                              :}| ;
+Operacion3 ::= Aparentesis Operacion:e Cparentesis {: RESULT = new SimboloTabla(); RESULT = e :}|
+               Operacion5:e {: RESULT = new SimboloTabla(); RESULT = e :};
+Operacion5 ::= IDL3:e {:
+                        if(!TablaSimbolos.getError()){
+                          RESULT = new SimboloTabla();
+                          RESULT.setNombre(e.getNombre());
+                          RESULT.setTipoDeclaracion(e.getTipoDeclaracion());
+                        }
+                      :}|
+               Integer:e  {:
+                            RESULT = new SimboloTabla();
+                            RESULT.setValor(e.toString());
+                            RESULT.setTipo("Integer");
+                          :}|
+               Float:e  {:
+                          RESULT = new SimboloTabla();
+                          RESULT.setValor(e.toString());
+                          RESULT.setTipo("Float");
+                        :}|
+               Varchar:e {:
+                          RESULT = new SimboloTabla();
+                          RESULT.setValor(e.toString());
+                          RESULT.setTipo("String");
+                        :}|
+               Bit:e    {:
+                          RESULT = new SimboloTabla();
+                          RESULT.setValor(e.toString());
+                          RESULT.setTipo("Bit");
+                        :}|
+               Var:e  {:
+                        if(!e.yaExiste){
+                          TablaSimbolos.ERROR("La variable " + e.getNombre() + " no existe en el ámbito actual");
+                        }
+                        else{
+                          RESULT = new SimboloTabla();
+                          RESULT.setNombre(e.getNombre());
+                          RESULT.setValor(e.getValor());
+                          RESULT.setTipo(e.getTipo());
+                        }
+                      :}|
+               NULL {: RESULT = new SimboloTabla(); RESULT.setTipo("Null"); :};
 Operaciones ::= Coma Operacion Operaciones | ;
 
 Not ::= NOT | ;
@@ -804,8 +958,7 @@ Save ::= SAVE TransactName Name:e {:if(TablaSimbolos.inicioTransaccion){
                                       TablaSimbolos.ERROR("No existe transaccion"+e.getNombre());
                                    }
 
-                                     :};
-                                   }
+                                     :};                                   
 OrAlter ::= OR ALTER | ;
 
 
