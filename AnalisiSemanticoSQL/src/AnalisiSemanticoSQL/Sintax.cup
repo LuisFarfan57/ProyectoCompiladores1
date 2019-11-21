@@ -629,7 +629,16 @@ DeclareDefinition6 ::= Coma Var:e DeclareDefinition6  {:
                                                       }
                                                     :}| ;
 
-SetDefinition ::= SET Var Igual SetDefinition1;
+SetDefinition ::= SET Var:e Igual SetDefinition1:valor{:
+                                                    if(!TablaSimbolos.getError()){
+                                                      if(!e.yaExiste){
+                                                        TablaSimbolos.ERROR("La variable " + e.getNombre() + " no existe en el ámbito actual");
+                                                      }
+                                                      else{
+                                                        e.setValor(valor.getValor());
+                                                      }
+                                                    }
+                                                :};
 SetDefinition1 ::= Operacion | TRUE | FALSE;
 
 //Use
