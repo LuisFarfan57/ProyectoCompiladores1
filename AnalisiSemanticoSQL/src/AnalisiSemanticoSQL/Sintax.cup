@@ -202,8 +202,8 @@ SentenciasTCL ::= Transact|
                   Save ;
 Fin ::= PuntoYComa|
         GO ;
-ID ::= Acorchete Identificador Ccorchete|
-       Identificador ;
+ID ::= Acorchete Identificador:e Ccorchete {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:}|
+       Identificador {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:};
 IDL1 ::= ID:e IDL2  {:
                       if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
                         TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
@@ -704,21 +704,62 @@ Use ::= USE Identificador:e
         :};
 
 Transact ::= BEGIN TransactName Transact1 ;
-Transact1 ::= Name Transact2 | ;
+Transact1 ::= Name:e Transact2 {:RESULT=new SimboloTabla(); RESULT.setNombre(e.getNombre());RESULT.setTipoDeclaracion("Transaccion");TablaSimbolos.nuevoAmbito();RESULT.setAmbito(TablaSimbolos.getAmbitoActual());TablaSimbolos.add(RESULT);TablaSimbolos.inicioTransaccion=true;:} |{:TablaSimbolos.nuevoAmbito();TablaSimbolos.inicioTransaccion=true;:} ;
 Transact2 ::= WITH MARK Transact3 | ;
 Transact3 ::= Varchar | ;
 TransactName ::= TRAN | 
                  TRANSACTION ;
-Name ::= ID | 
-         Var ;
+Name ::= ID:e {: RESULT = new SimboloTabla(); RESULT.setNombre(SimboloTabla.getNombre());:}| 
+         Var:e {: RESULT = new SimboloTabla(); RESULT.setNombre(SimboloTabla.getNombre());:} ;
 Name1 ::= ID | 
           Var | ;
-Rollback ::= ROLLBACK TransactName Rollback1 ;
-Rollback1 ::= Name | ;
+Rollback ::= ROLLBACK TransactName Rollback1  ;
+Rollback1 ::= Name:e {:if(TablaSimbolos.buscarIdentificador(e.getNombre(),"Transaccion")||TablaSimbolos.buscarIdentificador(e.getNombre(),"SavePoint")){
+                        RESULT=new SimboloTabla(); 
+                        RESULT.setNombre(e.getNombre());
+                        RESULT.setTipoDeclaracion("Rollback");
+                        RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+                        TablaSimbolos.add(RESULT);
+                        TablaSimbolos.cerrarAmbitoActual();
+                        TablaSimbolos.inicioTransaccion=false;
+                    } else {
+                        TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
+                    }:}| {:if(TablaSimbolos.inicioTransaccion){                  
+                        TablaSimbolos.cerrarAmbitoActual();
+                        TablaSimbolos.inicioTransaccion=false;
+                    } else {
+                        TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
+                    }:} ;
 Commit ::= COMMIT Commit1 ;
-Commit1 ::= TransactName Name1 | ;
-Save ::= SAVE TransactName Name ;
+Commit1 ::= TransactName Name1:e {:if(TablaSimbolos.buscarIdentificador(e.getNombre(),"Transaccion")||TablaSimbolos.buscarIdentificador(e.getNombre(),"SavePoint")){
+                        RESULT=new SimboloTabla(); 
+                        RESULT.setNombre(e.getNombre());
+                        RESULT.setTipoDeclaracion("Commit");
+                        RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+                        TablaSimbolos.add(RESULT);
+                        TablaSimbolos.cerrarAmbitoActual();
+                    } else {
+                        TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
+                    }:} | {:if(TablaSimbolos.inicioTransaccion){                  
+                        TablaSimbolos.cerrarAmbitoActual();
+                        TablaSimbolos.inicioTransaccion=false;
+                    } else {
+                        TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
+                    }:} ;
+Save ::= SAVE TransactName Name:e {:if(TablaSimbolos.inicioTransaccion){RESULT=new SimboloTabla();
+                                     RESULT.setNombre(e.getNombre());
+                                     RESULT.setTipoDeclaracion("SavePoint");
+                                     TablaSimbolos.nuevoAmbito();
+                                     RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+                                     TablaSimbolos.add(RESULT);
+                                   } else {
+                                     TablaSimbolos.ERROR("No existe transaccion"+e.getNombre());
+                                   }
+
+                                     :};
+                                   }
 OrAlter ::= OR ALTER | ;
+
 
 
 
