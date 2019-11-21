@@ -193,7 +193,7 @@ Inicio1 ::= Inicio2 Fin Inicio1 |
             error Fin Inicio1 | ;
 Inicio2 ::= SentenciasDDL|
             SentenciasTCL|
-            Function | DeclareDefinition | Use ;
+            Function | DeclareDefinition | SetDefinition | Use ;
 SentenciasDDL ::= Create|
                   Drop ;
 SentenciasTCL ::= Transact|
@@ -203,17 +203,24 @@ SentenciasTCL ::= Transact|
 Fin ::= PuntoYComa|
         GO ;
 ID ::= Acorchete Identificador:e Ccorchete {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:}|
-       Identificador {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:};
-IDL1 ::= ID:e IDL2  {:
-                      if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
-                        TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
-                      }
-                      else{
-                        RESULT = new SimboloTabla();
-                        RESULT.setNombre(e.getNombre());
-                        RESULT.setTipoDeclaracion("Tabla");
-                      }
-                    :};
+       Identificador:e {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:};
+IDL1 ::= ID:e IDL2:e1   {:
+                          if(e1 != null){
+                            if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
+                              TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
+                            }
+                            else{
+                              RESULT = new SimboloTabla();
+                              RESULT.setNombre(e.getNombre() + "." + e1.getNombre());
+                              RESULT.setTipoDeclaracion("TablaColumna");                              
+                            }
+                          }
+                          else{
+                            RESULT = new SimboloTabla();
+                            RESULT.setNombre(e.getNombre());
+                            RESULT.setTipoDeclaracion("Columna");                            
+                          }                          
+                        :};
 IDL2 ::= Punto ID:e {:
                       if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Columna")){
                         TablaSimbolos.ERROR("No existe la columna " + e.getNombre() + " en el ámbito actual");
@@ -221,20 +228,59 @@ IDL2 ::= Punto ID:e {:
                       else{
                         RESULT = new SimboloTabla();
                         RESULT.setNombre(e.getNombre());
-                        RESULT.setTipoDeclaracion("Columna");
+                        RESULT.setTipoDeclaracion("Columna");                        
                       }
-                    :}| ;
-IDL3 ::= ID:e IDL4 {:
-                        if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Base de datos")){
-                          TablaSimbolos.ERROR("No existe la base de datos " + e.getNombre() + " en el ámbito actual");
+                    :}|
+                      {:
+                        RESULT = new SimboloTabla();
+                        RESULT = null;                        
+                      :};
+IDL3 ::= ID:e IDL4:e1 {:
+                        if(e1 != null){
+                          if(e1.getTipoDeclaracion().equals("TablaColumna")){
+                            if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Base de datos")){
+                              TablaSimbolos.ERROR("No existe la base de datos " + e.getNombre() + " en el ámbito actual");
+                            }
+                            else{
+                              RESULT = new SimboloTabla();
+                              RESULT.setNombre(e.getNombre() + e1.getNombre());
+                              RESULT.setTipoDeclaracion("Base de datosTablaColumna");
+                              TablaSimbolos.add(RESULT);
+                            }                            
+                          }
+                          else{
+                            if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Tabla")){
+                              TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
+                            }
+                            else{
+                              RESULT = new SimboloTabla();
+                              RESULT.setNombre(e.getNombre() + e1.getNombre());
+                              RESULT.setTipoDeclaracion("TablaColumna");
+                              TablaSimbolos.add(RESULT);
+                            }                            
+                          }                          
                         }
                         else{
-                          RESULT = new SimboloTabla();
-                          RESULT.setNombre(e.getNombre());
-                          RESULT.setTipoDeclaracion("Base de datos");
-                        }                            
+                          if(!TablaSimbolos.buscarIdentificador(e.getNombre(), "Columna")){
+                            TablaSimbolos.ERROR("No existe la base de columna " + e.getNombre() + " en el ámbito actual");
+                          }
+                          else{
+                            RESULT = new SimboloTabla();
+                            RESULT.setNombre(e.getNombre());
+                            RESULT.setTipoDeclaracion("Columna");
+                            TablaSimbolos.add(RESULT);
+                          }                            
+                        }                        
                     :};
-IDL4 ::= Punto IDL1| ;
+IDL4 ::= Punto IDL1:e {:
+                      RESULT = new SimboloTabla();
+                      RESULT.setNombre(e.getNombre());
+                      RESULT.setTipoDeclaracion(e.getTipoDeclaracion());
+                    :}|
+                      {:
+                        RESULT = new SimboloTabla();
+                        RESULT = null;
+                      :};
 
 IFExists ::= IF EXISTS ;
 
@@ -709,8 +755,8 @@ Transact2 ::= WITH MARK Transact3 | ;
 Transact3 ::= Varchar | ;
 TransactName ::= TRAN | 
                  TRANSACTION ;
-Name ::= ID:e {: RESULT = new SimboloTabla(); RESULT.setNombre(SimboloTabla.getNombre());:}| 
-         Var:e {: RESULT = new SimboloTabla(); RESULT.setNombre(SimboloTabla.getNombre());:} ;
+Name ::= ID:e {: RESULT = new SimboloTabla(); RESULT.setNombre(e.getNombre());:}| 
+         Var:e {: RESULT = new SimboloTabla(); RESULT.setNombre(e.getNombre());:} ;
 Name1 ::= ID | 
           Var | ;
 Rollback ::= ROLLBACK TransactName Rollback1  ;
@@ -728,7 +774,7 @@ Rollback1 ::= Name:e {:if(TablaSimbolos.buscarIdentificador(e.getNombre(),"Trans
                         TablaSimbolos.cerrarAmbitoActual();
                         TablaSimbolos.inicioTransaccion=false;
                     } else {
-                        TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
+                        TablaSimbolos.ERROR("No existe transaccion o savepoint");
                     }:} ;
 Commit ::= COMMIT Commit1 ;
 Commit1 ::= TransactName Name1:e {:if(TablaSimbolos.buscarIdentificador(e.getNombre(),"Transaccion")||TablaSimbolos.buscarIdentificador(e.getNombre(),"SavePoint")){
@@ -738,22 +784,24 @@ Commit1 ::= TransactName Name1:e {:if(TablaSimbolos.buscarIdentificador(e.getNom
                         RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
                         TablaSimbolos.add(RESULT);
                         TablaSimbolos.cerrarAmbitoActual();
+                        TablaSimbolos.inicioTransaccion=false;
                     } else {
                         TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
                     }:} | {:if(TablaSimbolos.inicioTransaccion){                  
                         TablaSimbolos.cerrarAmbitoActual();
                         TablaSimbolos.inicioTransaccion=false;
                     } else {
-                        TablaSimbolos.ERROR("No existe transaccion o savepoint "+e.getNombre());
+                        TablaSimbolos.ERROR("No existe transaccion o savepoint");
                     }:} ;
-Save ::= SAVE TransactName Name:e {:if(TablaSimbolos.inicioTransaccion){RESULT=new SimboloTabla();
-                                     RESULT.setNombre(e.getNombre());
-                                     RESULT.setTipoDeclaracion("SavePoint");
-                                     TablaSimbolos.nuevoAmbito();
-                                     RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
-                                     TablaSimbolos.add(RESULT);
+Save ::= SAVE TransactName Name:e {:if(TablaSimbolos.inicioTransaccion){
+                                      RESULT=new SimboloTabla();
+                                      RESULT.setNombre(e.getNombre());
+                                      RESULT.setTipoDeclaracion("SavePoint");
+                                      TablaSimbolos.nuevoAmbito();
+                                      RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+                                      TablaSimbolos.add(RESULT);
                                    } else {
-                                     TablaSimbolos.ERROR("No existe transaccion"+e.getNombre());
+                                      TablaSimbolos.ERROR("No existe transaccion"+e.getNombre());
                                    }
 
                                      :};

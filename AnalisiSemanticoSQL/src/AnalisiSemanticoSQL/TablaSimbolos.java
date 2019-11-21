@@ -18,15 +18,7 @@ public class TablaSimbolos {
     public static ArrayList<SimboloTabla> listaTemporal = new ArrayList<>();
     private static boolean error;
     private static String errores = "";
-    private static boolean soloLectura;
-    
-    public static void setSoloLectura(boolean lectura){
-        soloLectura = lectura;
-    }
-    
-    public static boolean getSoloLectura(){
-        return soloLectura;
-    }
+    public static boolean inicioTransaccion;        
     
     public static String obtenerValorVariable(String identificador, String tipoDeclaracion){
         for (int i = 0; i < tablaSimbolos.size(); i++) {
