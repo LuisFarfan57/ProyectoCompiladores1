@@ -110,6 +110,30 @@ public class TablaSimbolos {
         return false;
     }
     
+    public static Boolean buscarIdentificadorSinAmbito(String identificador, String tipoDeclaracion){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(identificador) && tablaSimbolos.get(i).getTipoDeclaracion().equals(tipoDeclaracion))
+                return true;
+        }
+        
+        return false;
+    }
+
+    public static void eliminarSimbolo(String identificador, String tipoDeclaracion){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).getNombre().equals(identificador) && tablaSimbolos.get(i).getTipoDeclaracion().equals(tipoDeclaracion))
+                tablaSimbolos.remove(i);
+        }
+    }
+
+    public static void eliminarElementosBase(String identificador){
+        for (int i = 0; i < tablaSimbolos.size(); i++) {
+            if(tablaSimbolos.get(i).BaseDeDatos.equals(identificador))
+                tablaSimbolos.remove(i);
+        }
+    }
+    
+    
     public static void actualizarTipoValorSimbolo(String nombre, int ambito, String tipo, String valor){
         for (int i = 0; i < tablaSimbolos.size(); i++) {
             if(tablaSimbolos.get(i).getNombre().equals(nombre) && tablaSimbolos.get(i).getAmbito() == ambito){

@@ -656,11 +656,85 @@ DropOptions ::= DropTable|
                 DropIndex ;
 DropTable ::= TABLE AlterTableDrop5 IDL3 DropTable1 ;
 DropTable1 ::= Coma IDL3 DropTable1 | ;
-DropView ::= VIEW AlterTableDrop5 IDL1 DropView1 ;
-DropView1 ::= Coma IDL1 DropView1 | ;
-DropUser ::= USER AlterTableDrop5 ID ;
-DropDataBase ::= DATABASE AlterTableDrop5 ID DropDataBase1 ;
-DropDataBase1 ::= Coma ID DropDataBase1 | ;
+DropView ::= VIEW AlterTableDrop5 IDL1:e DropView1 {:
+                                                             if(!TablaSimbolos.getError()){
+                                                                RESULT = new SimboloTabla();
+                                                                String[] temp;
+                                                                if(e.getNombre().contains(".")){
+                                                                    temp = e.getNombre().split('.');
+                                                                    RESULT.setNombre(temp[1]);
+                                                                }
+                                                                else{
+                                                                    RESULT.setNombre(e.getNombre());
+                                                                }
+                                                                RESULT.setTipoDeclaracion("Vista");
+                                                                TablaSimbolos.listaTemporal.add(RESULT)
+                                                                for(SimboloTabla val: listaTemporal){
+                                                                    if(TablaSimbolos.buscarIdentificadorSinAmbito(val.getNombre(), val.getTipoDeclaracion())){
+                                                                        eliminarSimbolo(val.getNombre(), val.getTipoDeclaracion());
+                                                                    }
+                                                                    else{
+                                                                        TablaSimbolos.ERROR("No se ha encontrado la vista" + val.getNombre());
+                                                                    }
+                                                                }
+                                                                TablaSimbolos.listaTemporal.clear();
+                                                            }
+                                                            :} ;
+DropView1 ::= Coma IDL1:e DropView1 {:
+                                            if(!TablaSimbolos.getError()){
+                                                String[] temp;
+                                                RESULT = new SimboloTabla();
+                                                if(e.getNombre().contains(".")){
+                                                    temp = e.getNombre().split('.');
+                                                    RESULT.setNombre(temp[1]);
+                                                }
+                                                else{
+                                                    RESULT.setNombre(e.getNombre());
+                                                }
+                                                RESULT.setTipoDeclaracion("Vista");
+                                                TablaSimbolos.listaTemporal.add(RESULT)
+                                            }
+                                            :}| ;
+DropUser ::= USER AlterTableDrop5 ID:3 {:
+                                        if(!TablaSimbolos.getError()){
+                                            RESULT = new SimboloTabla();
+                                            RESULT.setNombre(e.getNombre());
+                                            RESULT.setTipoDeclaracion("Usuario");
+                                            RESULT.BaseDeDatos = TablaSimbolos.BaseDeDatosActual;
+                                            if(TablaSimbolos.buscarIdentificador(val.getNombre(), val.getTipoDeclaracion())){
+                                                eliminarSimbolo(val.getNombre(), val.getTipoDeclaracion());
+                                            }
+                                            else{
+                                                TablaSimbolos.ERROR("No se ha encontrado el usuario" + val.getNombre());
+                                            }
+                                        }
+                                        :};
+DropDataBase ::= DATABASE AlterTableDrop5 ID:e DropDataBase1 {:
+                                                             if(!TablaSimbolos.getError()){
+                                                                RESULT = new SimboloTabla();
+                                                                RESULT.setNombre(e.getNombre());
+                                                                RESULT.setTipoDeclaracion("Base de datos");
+                                                                TablaSimbolos.listaTemporal.add(RESULT)
+                                                                for(SimboloTabla val: listaTemporal){
+                                                                    if(TablaSimbolos.buscarIdentificadorSinAmbito(val.getNombre(), val.getTipoDeclaracion())){
+                                                                        eliminarSimbolo(val.getNombre(), val.getTipoDeclaracion());
+                                                                        eliminarElementosBase(val.getNombre);
+                                                                    }
+                                                                    else{
+                                                                        TablaSimbolos.ERROR("No se ha encontrado la base de datos" + val.getNombre());
+                                                                    }
+                                                                }
+                                                                TablaSimbolos.listaTemporal.clear();
+                                                            }
+                                                            :};
+DropDataBase1 ::= Coma ID:e DropDataBase1 {:
+                                            if(!TablaSimbolos.getError()){
+                                                RESULT = new SimboloTabla();
+                                                RESULT.setNombre(e.getNombre());
+                                                RESULT.setTipoDeclaracion("Base de datos");
+                                                TablaSimbolos.listaTemporal.add(RESULT)
+                                            }
+                                            :}| ;
 DropIndex ::= INDEX AlterTableDrop5 DropIndex1 DropIndex2 ;
 DropIndex1 ::= ID ON IDL3 ;
 DropIndex2 ::= Coma DropIndex1 DropIndex2 | ;
