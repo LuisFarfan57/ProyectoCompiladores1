@@ -208,7 +208,12 @@ ID ::= Acorchete Identificador:e Ccorchete {: RESULT = new SimboloTabla(); RESUL
        Identificador:e {: RESULT = new SimboloTabla(); RESULT.setNombre(e.toString());:};
 IDL1 ::= ID:e IDL2:e1   {:
                           if(!TablaSimbolos.getError()){
+                            RETURN = new SimboloTabla();
+                            RETURN.setNombre(e.getNombre());
                             if(e1 != null){
+                              RETURN.setNombre(RETURN.getNombre() + e1.getNombre());
+                            }
+                            /*if(e1 != null){
                               if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Tabla")){
                                 TablaSimbolos.ERROR("No existe la tabla " + e.getNombre() + " en el ámbito actual");
                               }
@@ -227,19 +232,21 @@ IDL1 ::= ID:e IDL2:e1   {:
                                 RESULT.setNombre(e.getNombre());
                                 RESULT.setTipoDeclaracion("Columna");                            
                               }                            
-                            }                          
+                            }*/                          
                           }                          
                         :};
 IDL2 ::= Punto ID:e {:
                       if(!TablaSimbolos.getError()){
-                        if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Columna")){
+                        RESULT = new SimboloTabla();
+                        RESULT.setNombre("." + e.getNombre());
+                        /*if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Columna")){
                           TablaSimbolos.ERROR("No existe la columna " + e.getNombre() + " en el ámbito actual");
                         }
                         else{
                           RESULT = new SimboloTabla();
                           RESULT.setNombre(e.getNombre());
                           RESULT.setTipoDeclaracion("Columna");                        
-                        }
+                        }*/
                       }                      
                     :}|
                       {:
@@ -250,7 +257,12 @@ IDL2 ::= Punto ID:e {:
                       :};
 IDL3 ::= ID:e IDL4:e1 {:
                         if(!TablaSimbolos.getError()){
+                          RETURN = new SimboloTabla();
+                          RETURN.setNombre(e.getNombre());
                           if(e1 != null){
+                            RETURN.setNombre(RETURN.getNombre() + e1.getNombre());
+                          }
+                          /*if(e1 != null){
                             if(e1.getTipoDeclaracion().equals("TablaColumna")){
                               if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Base de datos")){
                                 TablaSimbolos.ERROR("No existe la base de datos " + e.getNombre() + " en el ámbito actual");
@@ -284,14 +296,16 @@ IDL3 ::= ID:e IDL4:e1 {:
                               RESULT.setTipoDeclaracion("Columna");
                               TablaSimbolos.add(RESULT);
                             }                            
-                          }                        
+                          }*/                        
                         }                        
                     :};
 IDL4 ::= Punto IDL1:e {:
                       if(!TablaSimbolos.getError()){
-                        RESULT = new SimboloTabla();
+                        RETURN = new SimboloTabla();
+                        RETURN.setNombre("." + e.getNombre());
+                        /*RESULT = new SimboloTabla();
                         RESULT.setNombre(e.getNombre());
-                        RESULT.setTipoDeclaracion(e.getTipoDeclaracion());
+                        RESULT.setTipoDeclaracion(e.getTipoDeclaracion());*/
                       }                      
                     :}|
                       {:
@@ -313,8 +327,7 @@ Var ::= Arroba Identificador:e
               RESULT.setNombre(e.toString());
               RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
               RESULT.setTipoDeclaracion("Variable");
-              RESULT.yaExiste = false;
-              TablaSimbolos.add(RESULT);
+              RESULT.yaExiste = false;           
               TablaSimbolos.listaTemporal.add(RESULT);
             } 
             else{
@@ -492,17 +505,17 @@ Operacion2 ::= Suma Operacion1:e Operacion2:e1 {:
                                                   if(!TablaSimbolos.getError()){
                                                     RESULT = new SimboloTabla();
                                                     RESULT.setTipo(e.getTipo());
-                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                    if(e.getTipo().equals("String") || e1.getTipo().equals("String")){
                                                       TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
                                                     }
                                                     else{
-                                                      if(e1.multiplicacion){
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                      if(e1.suma){
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) + Float.parseFloat(e1.getValor())));
                                                       }
                                                       else{
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) - Float.parseFloat(e1.getValor())));
                                                       }
-                                                      RESULT.multiplicacion = true;
+                                                      RESULT.suma = true;
                                                     }                                                  
                                                   }                                                
                                                 }                                                
@@ -512,17 +525,17 @@ Operacion2 ::= Suma Operacion1:e Operacion2:e1 {:
                                                   if(!TablaSimbolos.getError()){
                                                     RESULT = new SimboloTabla();
                                                     RESULT.setTipo(e.getTipo());
-                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                    if(e.getTipo().equals("String") || e1.getTipo().equals("String")){
                                                       TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
                                                     }
                                                     else{
-                                                      if(e1.multiplicacion){
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                      if(e1.suma){
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) + Float.parseFloat(e1.getValor())));
                                                       }
                                                       else{
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) - Float.parseFloat(e1.getValor())));
                                                       }
-                                                      RESULT.multiplicacion = true;
+                                                      RESULT.suma = false;
                                                     }                                                  
                                                   }                                                
                                                 }                                                
@@ -532,15 +545,15 @@ Operacion1 ::= Operacion3:e Operacion4:e1 {:
                                               RESULT = new SimboloTabla();
                                               RESULT.setTipo(e.getTipo());
                                               if(e1 != null){
-                                                if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                if(e.getTipo().equals("String") || e1.getTipo().equals("String")){
                                                       TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
                                                 }
                                                 else{
                                                   if(e1.multiplicacion){
-                                                    RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                    RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())));
                                                   }
                                                   else{
-                                                    RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                    RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())));
                                                   }
                                                 }
                                               }
@@ -554,15 +567,15 @@ Operacion4 ::= Mul Operacion3:e Operacion4:e1  {:
                                                   if(!TablaSimbolos.getError()){
                                                     RESULT = new SimboloTabla();
                                                     RESULT.setTipo(e.getTipo());
-                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                    if(e.getTipo().equals("String") || e1.getTipo().equals("String")){
                                                       TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
                                                     }
                                                     else{
                                                       if(e1.multiplicacion){
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())));
                                                       }
                                                       else{
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())));
                                                       }
                                                       RESULT.multiplicacion = true;
                                                     }                                                  
@@ -574,23 +587,23 @@ Operacion4 ::= Mul Operacion3:e Operacion4:e1  {:
                                                   if(!TablaSimbolos.getError()){
                                                     RESULT = new SimboloTabla();
                                                     RESULT.setTipo(e.getTipo());
-                                                    if(e.getTipo().equals("String") || e1.getTipo("String")){
+                                                    if(e.getTipo().equals("String") || e1.getTipo().equals("String")){
                                                       TablaSimbolos.ERROR("No se pueden realizar operaciones con cadenas");
                                                     }
                                                     else{
                                                       if(e1.multiplicacion){
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())).toString());
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) * Float.parseFloat(e1.getValor())));
                                                       }
                                                       else{
-                                                        RESULT.setValor((Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())).toString());
+                                                        RESULT.setValor(String.valueOf(Float.parseFloat(e.getValor()) / Float.parseFloat(e1.getValor())));
                                                       }
                                                       RESULT.multiplicacion = false;
                                                     }                                                  
                                                   }                                                
                                                 }                                                
                                               :}| ;
-Operacion3 ::= Aparentesis Operacion:e Cparentesis {: RESULT = new SimboloTabla(); RESULT = e :}|
-               Operacion5:e {: RESULT = new SimboloTabla(); RESULT = e :};
+Operacion3 ::= Aparentesis Operacion:e Cparentesis {: RESULT = new SimboloTabla(); RESULT = e; :}|
+               Operacion5:e {: RESULT = new SimboloTabla(); RESULT = e; :};
 Operacion5 ::= IDL3:e {:
                         if(!TablaSimbolos.getError()){
                           RESULT = new SimboloTabla();
@@ -663,8 +676,32 @@ Create1 ::= Procedure |
             CreateUser |
             CreateView |
             CreateIndex ;
-CreateUser ::= USER ID ;
-CreateDataBase ::= DATABASE ID CreateDataBase1 ;
+CreateUser ::= USER ID:e  {:
+                            if(!TablaSimbolos.getError()){
+                              if(!TablaSimbolos.buscarIdentificadorGeneral(e.getNombre(), "Usuario")){
+                                RESULT = new SimboloTabla();
+                                RESULT.setNombre(e.getNombre());
+                                RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+                                RESULT.setTipoDeclaracion("Usuario");
+                                TablaSimbolos.add(RESULT);
+                              }
+                              else{
+                                TablaSimbolos.ERROR("El usuario " + e.getNombre() + " ya existe");
+                              }                              
+                            }
+                          :};
+
+CreateDataBase ::= DATABASE ID:e CreateDataBase1 {: 
+                                                    if(!TablaSimbolos.buscarIdentificadorSinAmbito(e.getNombre(), "Base de datos")){
+                                                      RETURN = new SimboloTabla();
+                                                      RETURN.setNombre(e.getNombre());
+                                                      RETURN.setTipoDeclaracion("Base de datos");
+                                                      TablaSimbolos.add(RESULT);
+                                                    }
+                                                    else{
+                                                      TablaSimbolos.ERROR("La base de datos " + e.getNombre() + " ya existe");
+                                                    }                                                    
+                                                     :};
 CreateDataBase1 ::= CreateDataBase2 CollateDataBase ;
 CreateDataBase2 ::= ON Primary Definitions | ;
 CollateDataBase ::= COLLATE ID | ;
@@ -692,7 +729,9 @@ MaxSize2 ::= Size2 |
 FileGrowth ::= FILEGROWTH Igual Integer FileGrowth1 ;
 FileGrowth1 ::= Size2 |
                 Porce | ;
+
 CreateView ::= VIEW IDL1 AS Select ;
+
 CreateIndex ::= CreateIndex1 ConstraintColumna3 INDEX ID ON IDL3 IndexColumna IndexInclude Where OnOption ;
 CreateIndex1 ::= UNIQUE | ;
 IndexColumna ::= Aparentesis IndexColumna1 Cparentesis ;
@@ -700,7 +739,19 @@ IndexColumna1 ::= ID OrderBy2 IndexColumna2 ;
 IndexColumna2 ::= Coma ID OrderBy2 IndexColumna2 | ;
 IndexInclude ::= INCLUDE ListaColumnas | ;
 OnOption ::= ON ID Aparentesis ID Cparentesis | ;
-CreateTable ::= TABLE IDL3 Aparentesis TableElement2 TableElement3 Cparentesis TableOption ;
+
+CreateTable ::= TABLE IDL3:e Aparentesis TableElement2 TableElement3 Cparentesis TableOption   {:
+                                                                                                    if(!TablaSimbolos.buscarIdentificadorSinAmbito(e.getNombre(), "Tabla")){
+                                                                                                      RESULT = new SimboloTabla();
+                                                                                                      RESULT.BaseDeDatos = TablaSimbolos.BaseDeDatosActual;
+                                                                                                      TablaSimbolos.TablaActual = e.getNombre();
+                                                                                                      RESULT.setNombre(e.getNombre());
+                                                                                                      RESULT.setTipoDeclaracion("Tabla");
+                                                                                                    }
+                                                                                                    else{
+                                                                                                      TablaSimbolos.ERROR("La tabla " + e.getNombre() + " ya existe");
+                                                                                                    }
+                                                                                                :};
 TableOption ::= ON PRIMARY | ;
 TableElement1 ::= NOT TableElement4 | NULL | ;
 TableElement4 ::= FOR REPLICATION TableElement5 | NULL ;
@@ -712,14 +763,31 @@ TableElement2 ::= DefinicionColumna |
 TableElement3 ::= Coma TableElement2 TableElement3 | ;
 
 
-DefinicionColumna ::= ID TipoDeDato DefinicionColumna1 DefinicionColumna6 ;
+DefinicionColumna ::= ID:e TipoDeDato:e1 DefinicionColumna1:e2 DefinicionColumna6:e3 {:
+                                                                                        if(!TablaSimbolos.getError()){
+                                                                                          RSULT = new SimboloTabla();
+                                                                                          RESULT.setNombre(e.getNombre());
+                                                                                          RESULT.setTipoDeclaracion("Columna");
+                                                                                          RESULT.setTipo(e1);
+                                                                                          RESULT.Tabla = TablaSimbolos.TablaActual;
+                                                                                          RESULT.BaseDeDatos = TablaSimbolos.BaseDeDatosActual;
+                                                                                          TablaSimbolos.add(RESULT);
+                                                                                        }
+                                                                                    :};
 DefinicionColumna1 ::= COLLATE ID | ;
 DefinicionColumna2 ::= IDENTITY DefinicionColumna5 | ;
 DefinicionColumna3 ::= NULL |
                        NOT NULL | ;
 DefinicionColumna4 ::= ROWGUIDCOL | ;
 DefinicionColumna5 ::= Aparentesis Bit Coma Bit Cparentesis | ;
-DefinicionColumna6 ::= CONSTRAINT ID DefinicionColumna12 | DefinicionColumna7 | ;
+DefinicionColumna6 ::= CONSTRAINT ID:e DefinicionColumna12 | DefinicionColumna7 {:
+                                                                                RESULT = new SimboloTabla();
+                                                                                RESULT.setNombre(e.getNombre());
+                                                                                RESULT.setTipoDeclaracion("Constraint");
+                                                                                RESULT.Tabla = TablaSimbolos.TablaActual;
+                                                                                RESULT.BaseDeDatos = TablaSimbolos.BaseDeDatosActual;
+                                                                                TablaSimbolos.add(RESULT);
+                                                                              :}| ;
 DefinicionColumna7 ::= IDENTITY DefinicionColumna5 TableElement1 DefinicionColumna4 ConstraintColumna |
                        DefinicionColumna9 DefinicionColumna10 DefinicionColumna4 ConstraintColumna |
                        ROWGUIDCOL ConstraintColumna |
@@ -837,8 +905,9 @@ DeclareDefinition2 ::= Igual InsertTipo1:e  {:
 DeclareDefinition3 ::= DeclareDefinition5 DeclareDefinition1:valor  {:
                                                                   if(!TablaSimbolos.getError()){
                                                                       for (int i = 0; i<TablaSimbolos.listaTemporal.size(); i++) {
-                                                                          TablaSimbolos.actualizarTipoValorSimbolo(TablaSimbolos.listaTemporal.get(i).getNombre(), 
-                                                                            TablaSimbolos.listaTemporal.get(i).getAmbito(), valor.getTipo(), valor.getValor());
+                                                                        TablaSimbolos.listaTemporal.get(i).setValor(valor.getValor());
+                                                                        TablaSimbolos.listaTemporal.get(i).setTipo(valor.getTipo());
+                                                                        TablaSimbolos.add(listaTemporal.get(i));
                                                                       }
 
                                                                       TablaSimbolos.listaTemporal.clear();
@@ -899,6 +968,7 @@ Use ::= USE Identificador:e
             RESULT.setNombre(e.toString());           
             RESULT.setTipoDeclaracion("Base de datos");
             TablaSimbolos.nuevoAmbito(e.toString());
+            TablaSimbolos.BaseDeDatosActual = e.toString();
             RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
             TablaSimbolos.add(RESULT);
         :};

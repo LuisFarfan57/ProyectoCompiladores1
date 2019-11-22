@@ -18,7 +18,10 @@ public class TablaSimbolos {
     public static ArrayList<SimboloTabla> listaTemporal = new ArrayList<>();
     private static boolean error;
     private static String errores = "";
-    public static boolean inicioTransaccion;        
+    public static boolean inicioTransaccion;      
+    
+    public static String BaseDeDatosActual;
+    public static String TablaActual;
     
     public static String obtenerValorVariable(String identificador, String tipoDeclaracion){
         for (int i = 0; i < tablaSimbolos.size(); i++) {
@@ -115,5 +118,5 @@ public class TablaSimbolos {
                 break;
             }
         }
-    }            
+    }        
 }

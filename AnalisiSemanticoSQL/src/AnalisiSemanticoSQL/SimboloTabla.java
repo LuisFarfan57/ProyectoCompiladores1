@@ -17,6 +17,11 @@ public class SimboloTabla {
     private String tipoDeclaracion; //Si es declarado como funcion, variable, procedimiento, tabla, etc.
     private int ambito; //Número de ambito al que pertenece, si el ambito es 0, significa que el ámbito ya se cerró y por lo tanto ya no se puede
                 //acceder a la variable    
+    
+    public String Tabla;
+    public String BaseDeDatos;
+    
+    
     public boolean yaExiste;
     
     public boolean multiplicacion;
@@ -28,7 +33,7 @@ public class SimboloTabla {
         tipoDeclaracion = "";
         ambito = 0;
         nombre = "";        
-    }
+    }       
     
     public SimboloTabla getSimbolo(){
         return this;
