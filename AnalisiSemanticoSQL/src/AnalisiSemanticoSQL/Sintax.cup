@@ -1104,7 +1104,69 @@ Save ::= SAVE TransactName Name:e {:if(TablaSimbolos.inicioTransaccion){
 
                                      :};                                   
 OrAlter ::= OR ALTER | ;
+Function ::= OrAlter FUNCTION IDL1:e Aparentesis FunctionParam Cparentesis RETURNS ReturnType:e1 
+{: if(!TablaSimbolos.getError()) {
+      TablaSimbolos.nuevoAmbito(e.getNombre());
+      RESULT= new SimboloTabla(); 
+       RESULT.setNombre(e.getNombre());
+       RESULT.setTipoDeclaracion("Funcion"); 
+      RESULT.setAmbito(TablaSimbolos.getAmbitoActual());
+      RESULT.setTipo(e1.getNombre());
+      if(!e1.getNombre().equals(e1.getTipo())){
+        TablaSimbolos.ERROR("error el tipo"+e1.getNombre()+"no es igual al tipo"+e1.getTipo());
+      }
+      else{
+        TablaSimbolos.add();
+      }
+     }
+       :};
+FunctionParam ::= FunctionParam1 | ;
+FunctionParam1 ::= FunctionParam2:e FunctionParam3 {: 
+              if(!TablaSimbolos.getError()){
+                for(int x=0;x<listaTemporal.size();x++){
+                    listaTemporal.get(x).setTipo(e.getNombre());
+                    listaTemporal.get(x).setTipoDeclaracion("Variable");
+                    listaTemporal.get(x).setAmbito(TablaSimbolos.getAmbitoActual());
+                    TablaSimbolos.add(listaTemporal.get(x));
+                    listaTemporal.get(x).setTipoDeclaracion("Parametro");
+                    TablaSimbolos.add(listaTemporal.get(x));
+                }
+                listaTemporal.clear();
+              }
+  :};
+FunctionParam2 ::= Var AsWord TipoDeDato3:e {: RESULT=new SimboloTabla(); RESULT.setNombre(e);:};
+ ProcedureDataType1 ReadOnlyWord ;
+FunctionParam3 ::= Coma FunctionParam1:e {: RESULT=new SimboloTabla(); RESULT=e :} | ;
+AsWord ::= AS | ;
+ReadOnlyWord ::= READONLY | ;
+ReturnType ::=ReturnData:e {RESULT=new SimboloTabla(); RESULT=e;} ;
+ReturnTable1 ::= WITH FunctionOption ReturnTable2 | ;
+ReturnTable2 ::= Coma ReturnTable1 | ;
+FunctionOption ::= ENCRYPTION |
+                   SCHEMABINDING |
+                   RETURNS NULL ON NULL INPUT |
+                   CALLED ON NULL INPUT |
+                   EXECUTE AS ExecuteType ;
+SelectOption ::= Aparentesis Select Cparentesis
 
+
+ |
+                 Select ;
+ReturnData ::= TipoDeDato3:e ReturnTable1 AsWord BEGIN SentenciasDML Fin RETURN ReturnData1:e1 END {: 
+  RESULT=new SimboloTabla(); 
+  RESULT.setNombre(e) //nombre es tipo de dato de la funcion;
+  RESULT.setTipo(e1.getTipo()) //tipo es tipo de dato retornado;
+  :} ;
+ReturnData1 ::= Var:e {: RESULT=new SimboloTabla(); RESULT.setTipo(SimboloTabla.obtenerTipoVariable(e.getNombre(),"Variable"));} | 
+                Number:e {: RESULT=new SimboloTabla(); RESULT.setTipo(e.ToString());:} |
+                Float {: RESULT=new SimboloTabla(); RESULT.setTipo(e.ToString());:} |
+                Varchar {: RESULT=new SimboloTabla(); RESULT.setTipo(e.ToString());:} ;
+ProcedureDataType1 ::= Igual DEFAULT | ;
+ExecuteType ::= CALLER |
+                SELF |
+                OWNER |
+                ID ;
+SentenciasDML ::= DeclareDefinition SentenciasDML | SetDefinition ;
 
 
 

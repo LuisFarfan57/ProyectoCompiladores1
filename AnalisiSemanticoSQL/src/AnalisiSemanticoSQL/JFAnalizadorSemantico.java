@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -301,6 +302,15 @@ public class JFAnalizadorSemantico extends javax.swing.JFrame {
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(JFAnalizadorSemantico.class.getName()).log(Level.SEVERE, null, ex);
             }
+            File archivoSalida=new File("tablaSimbolos.out");
+                    PrintWriter escribir=null;
+        try {
+            escribir=new PrintWriter(archivoSalida);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(JFAnalizadorSemantico.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                    escribir.print(TablaSimbolos.EscribirArchivo());
+                    escribir.close();
     }//GEN-LAST:event_btnAnalizarActionPerformed
 
     /**

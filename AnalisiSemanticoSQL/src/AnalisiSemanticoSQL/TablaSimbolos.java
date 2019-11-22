@@ -142,5 +142,12 @@ public class TablaSimbolos {
                 break;
             }
         }
-    }        
+    }
+     public static String EscribirArchivo(){
+            String texto="";
+            for(int i=0;i<tablaSimbolos.size();i++){
+                texto+=tablaSimbolos.get(i).getNombre()+","+tablaSimbolos.get(i).getTipo()+","+tablaSimbolos.get(i).getTipoDeclaracion()+","+tablaSimbolos.get(i).getValor()+","+tablaSimbolos.get(i).getAmbito();
+            }
+         return texto;   
+    }
 }
